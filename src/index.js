@@ -5,9 +5,9 @@ var App = require('./components/App');
 var Parent = React.createClass({
   render: function () {
     return (
-      <div>
+      <div className="soft">
         <h1>Ask Slash</h1>
-        <App name='World'/>
+        <App name='world'/>
       </div>
     );
   }

@@ -1,4 +1,21 @@
-h1 {
-  font-family: helvetica;
-  font-weight: 200;
-}
+// ## OUI and custom functions
+@import '../../../node_modules/optimizely-oui/src/oui/partials/sass/functions';
+
+// ## OUI and custom variables
+// The mobile website variables file can contain new variables or overwrite existing variables.
+@import '../../../node_modules/optimizely-oui/src/oui/oui-variables';
+
+// ## OUI and custom partials
+// Partials are files that import other components
+@import '../../../node_modules/optimizely-oui/src/oui/oui-partials';
+
+// ## Trumps (helper/utility classes)
+// Trumps use `!important` classes for overrides and should always be loaded last.
+@import '../../../node_modules/optimizely-oui/src/oui/partials/trumps/admin';
+@import '../../../node_modules/optimizely-oui/src/oui/partials/trumps/background';
+@import '../../../node_modules/optimizely-oui/src/oui/partials/trumps/borders';
+@import '../../../node_modules/optimizely-oui/src/oui/partials/trumps/layout';
+@import '../../../node_modules/optimizely-oui/src/oui/partials/trumps/margin';
+@import '../../../node_modules/optimizely-oui/src/oui/partials/trumps/padding';
+@import '../../../node_modules/optimizely-oui/src/oui/partials/trumps/type';
+@import '../../../node_modules/optimizely-oui/src/oui/partials/trumps/sizing';
