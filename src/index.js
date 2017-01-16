@@ -6,8 +6,8 @@ var Parent = React.createClass({
   render: function () {
     return (
       <div>
-        <h1>Derek's Changes</h1>
-        <App name=''/>
+        <h1>Ask Slash</h1>
+        <App name='World'/>
       </div>
     );
   }
@@ -17,10 +17,3 @@ ReactDOM.render(
   <Parent />,
   document.getElementById('root')
 );
-
-// Original File
-// import React from 'react';
-// import { render } from 'react-dom';
-// import App from './components/App';
-//
-// render(<App name='World'/>, document.getElementById('root'));

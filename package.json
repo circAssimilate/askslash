@@ -18,6 +18,7 @@
     "css-loader": "^0.23.1",
     "express": "^4.13.4",
     "node-sass": "^3.4.2",
+    "optimizely-oui": "^22.4.0",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "sass-loader": "^3.2.0",
