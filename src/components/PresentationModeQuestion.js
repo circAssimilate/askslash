@@ -2,6 +2,8 @@ const React = require('react');
 
 module.exports = React.createClass({
   propTypes: {
+    questionCount: React.PropTypes.number.isRequired,
+    currentQuestionIndex: React.PropTypes.number.isRequired,
     question: React.PropTypes.string.isRequired,
     date: React.PropTypes.string.isRequired,
     author: React.PropTypes.string.isRequired,
@@ -51,13 +53,17 @@ module.exports = React.createClass({
 
   render() {
     return(
-      <li className="push--ends question"
-          data-question-index={this.props.index} >
-        <div dangerouslySetInnerHTML={ this.processQuestionText() }></div>
+      <div data-ui-hook="presentation-mode-question-wrapper" className="flex--1 flex flex--column">
+        <div className="navigation-info">
+          Question { (this.props.currentQuestionIndex + 1) } of { this.props.questionCount }
+        </div>
+        <div className="flex--dead-center flex--1">
+          <blockquote dangerouslySetInnerHTML={ this.processQuestionText() }></blockquote>
+        </div>
         <div className="question-info">
           By <span className="highlight">{ this.props.author }</span> { this.renderTimeSincePosted() }
         </div>
-      </li>
+      </div>
     );
   }
 });

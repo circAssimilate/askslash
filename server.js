@@ -17,6 +17,8 @@ if(process.env.NODE_ENV !== 'production') {
 
 app.use(express.static(path.join(__dirname, 'dist')));
 
+app.use('/static', express.static(path.join(__dirname, 'src/assets/static')))
+
 app.get('/', function(request, response) {
   response.sendFile(__dirname + '/dist/index.html')
 });

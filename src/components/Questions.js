@@ -7,41 +7,37 @@ module.exports = React.createClass({
     questions: React.PropTypes.array.isRequired,
   },
 
-  getInitialState: function() {
+  getInitialState() {
     return {
       isLoading: false,
+      questions: [],
     };
   },
 
-  render: function () {
-    let questions = this.props.questions;
+  renderLoading() {
+    return (<div className="lego-overlay">
+      <div className="lego-spinner lego-spinner--small"></div>
+    </div>);
+  },
 
+  render() {
     if (this.state.isLoading) {
-      return (
-        <div>
-          <div className="lego-overlay">
-            <div className="lego-spinner lego-spinner--small"></div>
-          </div>
-        </div>
-      );
-    } else {
-      return(
-        <ol className="flex--1 soft">
-          { questions.map((question, index) => {
+      return this.renderLoading();
+    }
+    return(
+      <section>
+        <ol>
+          { this.props.questions.map((question) => {
             return (
               <Question
-                text={ question.text }
+                question={ question.question }
                 date={ question.date }
                 author= { question.author }
-                index= { index } />
+                key= { question.id } />
             );
           })}
         </ol>
-      );
-    }
+      </section>
+    );
   }
 });
-
-// setTimeout(function(){
-//     this.setState({isLoading: true});
-// }.bind(this), 1000);

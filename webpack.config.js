@@ -7,6 +7,7 @@ module.exports = {
   ],
   module: {
     loaders: [
+      { test: /\.svg$/, loader: 'svg-inline' },
       { test: /\.js?$/, loader: 'babel', exclude: /node_modules/ },
       { test: /\.s?css$/, loader: 'style!css!sass' },
     ]

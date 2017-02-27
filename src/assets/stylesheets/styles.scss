@@ -1,0 +1,135 @@
+$background-primary-color: #004766;
+$section-background-color: #fff;
+$text-primary-color: #fff;
+$text-secondary-color: #000;
+$highlight-primary-color: #ADE7FF;
+$highlight-secondary-color: #0081BA;
+$max-width: 800px;
+$min-width: 600px;
+
+html {
+  background: url('/static/img/bg.svg') no-repeat 0 30% $background-primary-color;
+}
+
+.main {
+  max-width: $max-width;
+  margin: 25px auto;
+}
+
+section {
+  background-color: $section-background-color;
+  max-width: $max-width;
+  min-width: $min-width;
+  border-radius: 5px;
+  margin: 25px auto 0 auto;
+  padding: 20px;
+}
+
+.aligner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aligner-item {
+  max-width: 50%;
+}
+
+.aligner-item--top {
+  align-self: flex-start;
+}
+
+.aligner-item--bottom {
+  align-self: flex-end;
+}
+
+footer a:link, footer a:visited {
+  font-size: 11px;
+  color: $text-primary-color;
+}
+
+.question {
+  border-bottom: 1px dashed #ededed;
+  padding-bottom: 10px;
+}
+
+.question-info {
+  font-size: 10px;
+  text-align: right;
+}
+
+.question:last-child {
+  border-bottom: none;
+}
+
+.noselect {
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.hashtag {
+  color: $highlight-secondary-color;
+}
+
+.highlight {
+  color: $highlight-secondary-color;
+}
+
+[data-ui-hook="presentation-mode"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 24px;
+  background: url('/static/img/bg.svg') no-repeat 0 30% $background-primary-color;
+  color: $text-primary-color;
+  height: 100%;
+  width: 100%;
+}
+
+[data-ui-hook="presentation-mode"] .hashtag {
+  color: $highlight-primary-color;
+}
+
+[data-ui-hook="presentation-mode"] .highlight {
+  color: $highlight-primary-color;
+}
+
+
+[data-ui-hook="presentation-mode-question-wrapper"] {
+  padding: 15% 20%;
+  background-color: rgba(0, 71, 102, 0.4);
+}
+
+[data-ui-hook="presentation-mode"] blockquote {
+  margin: 0 auto;
+}
+
+[data-ui-hook="presentation-mode"] .question-info {
+  margin: 0 auto;
+}
+
+
+[data-ui-hook="presentation-mode"] .navigation-info {
+  margin: 0 auto;
+  font-size: 14px;
+}
+
+.exit {
+  position: absolute;
+  font-size: 10px;
+  left: 10px;
+  top: 8px;
+}
+
+h1 {
+  font-size: 22px;
+}

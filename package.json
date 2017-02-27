@@ -17,12 +17,15 @@
     "babel-preset-react": "^6.5.0",
     "css-loader": "^0.23.1",
     "express": "^4.13.4",
+    "jquery": "^3.1.1",
     "node-sass": "^3.4.2",
     "optimizely-oui": "^22.4.0",
+    "oui-icons": "^3.1.1",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
     "sass-loader": "^3.2.0",
     "style-loader": "^0.13.1",
+    "svg-inline-loader": "^0.4.1",
     "webpack": "^1.12.14"
   },
   "devDependencies": {
