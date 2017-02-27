@@ -1,10 +1,10 @@
 require('./assets/stylesheets/base.scss');
 require('./assets/stylesheets/styles.scss');
+
 const $ = require('jquery');
+const ouiIcons = require('oui-icons');
 const React = require('react');
 const ReactDOM = require('react-dom');
-
-const ouiIcons = require('oui-icons');
 
 const Nav = require('./components/Nav');
 const Questions = require('./components/Questions');

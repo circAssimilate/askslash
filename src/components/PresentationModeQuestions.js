@@ -31,7 +31,7 @@ module.exports = React.createClass({
     const currentQuestion = this.props.questions[this.state.currentQuestion];
     return(
       <div data-ui-hook="presentation-mode" className="flex flex--column">
-        <div className="exit" onClick={ this.props.togglePresentationMode }>X</div>
+        <div className="exit noselect" onClick={ this.props.togglePresentationMode }>X</div>
         <PresentationModeQuestion
           currentQuestionIndex={ this.state.currentQuestion }
           questionCount={ this.props.questions.length }
