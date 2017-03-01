@@ -1,31 +1,50 @@
-var path = require('path');
-var express = require('express');
-var app = express();
-var PORT = process.env.PORT || 8080
+const bodyParser = require('body-parser');
+const express = require('express');
+const app = express();
+const path = require('path');
+const router = require('./routes');
+
+const PORT = process.env.PORT || 8080
+
+// Retrieve
+const MongoClient = require('mongodb').MongoClient;
+
+// Connect to the db
+MongoClient.connect("mongodb://localhost:27017/askslash", function(err, db) {
+  if (err) {
+    return console.error('Unable to connect to the server', err);
+  }
+
+  // db.createCollection('questions', function(err, collection) {
+  //   if(err) { return console.dir(err) }
+  //   console.log('Created questions collection');
+  // });
+
+  db.close();
+});
 
 // using webpack-dev-server and middleware in development environment
 if(process.env.NODE_ENV !== 'production') {
-  var webpackDevMiddleware = require('webpack-dev-middleware');
-  var webpackHotMiddleware = require('webpack-hot-middleware');
-  var webpack = require('webpack');
-  var config = require('./webpack.config');
-  var compiler = webpack(config);
+  const webpackDevMiddleware = require('webpack-dev-middleware');
+  const webpackHotMiddleware = require('webpack-hot-middleware');
+  const webpack = require('webpack');
+  const config = require('./webpack.config');
+  const compiler = webpack(config);
   
   app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
   app.use(webpackHotMiddleware(compiler));
 }
 
-app.use(express.static(path.join(__dirname, 'dist')));
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-app.use('/static', express.static(path.join(__dirname, 'src/assets/static')))
+app.use('/images/', express.static(path.join(__dirname, '/src/assets/static/img/')));
 
-app.get('/', function(request, response) {
-  response.sendFile(__dirname + '/dist/index.html')
-});
+app.use('/', router);
 
-app.listen(PORT, function(error) {
-  if (error) {
-    console.error(error);
+app.listen(PORT, function(err) {
+  if (err) {
+    console.error(err);
   } else {
     console.info("==> 🌎  Listening on port %s. Visit http://localhost:%s/ in your browser.", PORT, PORT);
   }
