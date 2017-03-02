@@ -38,7 +38,7 @@ module.exports = React.createClass({
           question={ currentQuestion.question}
           date={ currentQuestion.date }
           author= { currentQuestion.author }
-          key= { currentQuestion.id } />
+          key= { currentQuestion._id } />
       </div>
     );
   }

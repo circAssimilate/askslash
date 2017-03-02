@@ -24,6 +24,7 @@ module.exports = React.createClass({
     if (this.state.isLoading) {
       return this.renderLoading();
     }
+
     return(
       <section>
         <ol>
@@ -33,7 +34,7 @@ module.exports = React.createClass({
                 question={ question.question }
                 date={ question.date }
                 author= { question.author }
-                key= { question.id } />
+                key= { question._id } />
             );
           })}
         </ol>

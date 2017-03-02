@@ -1,7 +1,5 @@
-const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
-const path = require('path');
 const router = require('./routes');
 
 const PORT = process.env.PORT || 8080
@@ -14,12 +12,6 @@ MongoClient.connect("mongodb://localhost:27017/askslash", function(err, db) {
   if (err) {
     return console.error('Unable to connect to the server', err);
   }
-
-  // db.createCollection('questions', function(err, collection) {
-  //   if(err) { return console.dir(err) }
-  //   console.log('Created questions collection');
-  // });
-
   db.close();
 });
 
@@ -34,11 +26,6 @@ if(process.env.NODE_ENV !== 'production') {
   app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
   app.use(webpackHotMiddleware(compiler));
 }
-
-app.use(bodyParser.json()); // support json encoded bodies
-app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
-
-app.use('/images/', express.static(path.join(__dirname, '/src/assets/static/img/')));
 
 app.use('/', router);
 
