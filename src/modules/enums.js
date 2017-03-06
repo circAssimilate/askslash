@@ -1,3 +1,9 @@
+exports.channel = {
+  WEB: 'Web',
+  SLACK: 'Slack',
+  PHONE: 'Phone',
+};
+
 exports.collections = {
   MEETINGS: 'meetings',
   QUESTIONS: 'questions',

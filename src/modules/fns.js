@@ -3,7 +3,7 @@ const sanitizer = require('sanitizer');
 const markdown = require( "markdown" ).markdown;
 
 exports.sanitizeQuestionAndConvertMarkdownToHtml = (string) => {
-  let findHastags = string.replace(/(\#\S+)/g, '**$1**');
+  let findHastags = string.replace(/((^|\s)(#[0-9a-zA-Z]+)($|\s))/g, '$2[**$3**]($3)$4');
   let sanitizedHtml = sanitizer.sanitize(findHastags);
   let htmlFromMarkdown = markdown.toHTML(sanitizedHtml);
 
@@ -11,37 +11,45 @@ exports.sanitizeQuestionAndConvertMarkdownToHtml = (string) => {
 };
 
 exports.renderTimeSincePosted = (dateCreated) => {
-  // Epochs
-  const epochs = [
-      ['year', 31536000],
-      ['month', 2592000],
-      ['day', 86400],
-      ['hour', 3600],
-      ['minute', 60],
-      ['second', 1]
+  // Units of time
+  const unitsOfTime = [
+    ['year', 31536000],
+    ['month', 2592000],
+    ['day', 86400],
+    ['hour', 3600],
+    ['minute', 60],
+    ['second', 1]
   ];
 
   // Get duration
   const getDuration = (timeAgoInSeconds) => {
-      for (let [name, seconds] of epochs) {
-          const interval = Math.floor(timeAgoInSeconds / seconds);
-
-          if (interval >= 1) {
-              return {
-                  interval: interval,
-                  epoch: name
-              };
-          }
+    for (let [name, seconds] of unitsOfTime) {
+      const interval = Math.floor(timeAgoInSeconds / seconds);
+      if (interval >= 1) {
+        return {
+          interval: interval,
+          epoch: name
+        };
       }
+    }
+    return {
+      interval: null,
+      epoch: null
+    };
   };
 
   // Calculate
   const timeAgo = (date) => {
-      const timeAgoInSeconds = Math.floor((new Date() - new Date(date)) / 1000);
-      const {interval, epoch} = getDuration(timeAgoInSeconds);
-      const suffix = interval === 1 ? '' : 's';
+    const timeAgoInSeconds = Math.floor((new Date() - new Date(date)) / 1000);
+    const {interval, epoch} = getDuration(timeAgoInSeconds);
 
-      return `${interval} ${epoch}${suffix} ago`;
+    if (!interval) {
+      return 'just now';
+    }
+
+    const suffix = interval === 1 ? '' : 's';
+
+    return `${interval} ${epoch}${suffix} ago`;
   };
 
   return timeAgo(dateCreated);

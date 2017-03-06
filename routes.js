@@ -22,6 +22,8 @@ router.get('/users/:userId/books/:bookId', function (request, response) {
 
 const MongoClient = mongodb.MongoClient;
 
+/* QUESTIONS */
+
 // get questions
 router.get('/api/v1/questions', function(request, response) {
   MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
@@ -42,7 +44,7 @@ router.get('/api/v1/questions', function(request, response) {
   });
 });
 
-// post question
+// create question
 router.post('/api/v1/questions', function(request, response) {
   MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
     if (err) {
@@ -51,9 +53,11 @@ router.post('/api/v1/questions', function(request, response) {
     const collection = db.collection(modules.enums.collections.QUESTIONS);
 
     const question = {
-      question: request.body.question,
       author: request.body.author,
+      channel: request.body.channel,
       date: request.body.date,
+      meeting: request.body.meeting,
+      question: request.body.question,
     };
 
     collection.insert(question, function(err, result) {
@@ -62,6 +66,58 @@ router.post('/api/v1/questions', function(request, response) {
         return response.send(err);
       }
       console.log('Returned results for', modules.enums.collections.QUESTIONS);
+      response.send(result.ops[0]);
+    });
+
+    db.close();
+  });
+});
+
+
+/* MEETINGS */
+
+// get meeting
+router.get('/api/v1/meetings', function(request, response) {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+    if (err) {
+      return console.error('Unable to connect to the server', err);
+    }
+    const collection = db.collection(modules.enums.collections.MEETINGS);
+    collection.find({}).toArray(function(err, result) {
+      if (err) {
+        return console.error('Unable to get collection', err);
+      }
+      console.log('Returned results for', modules.enums.collections.MEETINGS);
+      response.send({
+        'meetings': result,
+      });
+    });
+    db.close();
+  });
+});
+
+// create meeting
+router.post('/api/v1/meetings', function(request, response) {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+    if (err) {
+      return console.error('Unable to connect to the server', err);
+    }
+    const collection = db.collection(modules.enums.collections.QUESTIONS);
+
+    const meeting = {
+      creator: request.body.creator,
+      name: request.body.name,
+      date: request.body.date,
+      description: request.body.description,
+      short_id: request.body.short_id,
+    };
+
+    collection.insert(question, function(err, result) {
+      if (err) {
+        console.error('Unable to post to collection', err);
+        return response.send(err);
+      }
+      console.log('Returned results for', modules.enums.collections.MEETINGS);
       response.send(result.ops[0]);
     });
 

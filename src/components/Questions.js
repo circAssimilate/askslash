@@ -9,23 +9,22 @@ module.exports = React.createClass({
 
   getInitialState() {
     return {
-      isLoading: false,
       questions: [],
     };
   },
 
-  renderLoading() {
-    return (<div className="lego-overlay">
-      <div className="lego-spinner lego-spinner--small"></div>
-    </div>);
+  renderNoQuestions() {
+    return(
+      <section>
+        <div className="text--center">
+          There are currently no questions for this meeting.
+        </div>
+      </section>
+    );
   },
 
-  render() {
-    if (this.state.isLoading) {
-      return this.renderLoading();
-    }
-
-    return(
+  renderQuestions() {
+     return(
       <section>
         <ol>
           { this.props.questions.map((question) => {
@@ -33,6 +32,7 @@ module.exports = React.createClass({
               <Question
                 question={ question.question }
                 date={ question.date }
+                channel={ question.channel }
                 author= { question.author }
                 key= { question._id } />
             );
@@ -40,5 +40,12 @@ module.exports = React.createClass({
         </ol>
       </section>
     );
+  },
+
+  render() {
+    if (this.props.questions.length) {
+      return this.renderQuestions();
+    }
+    return this.renderNoQuestions();
   }
 });

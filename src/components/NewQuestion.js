@@ -1,11 +1,14 @@
+const _ = require('lodash');
 const React = require('react');
+const { Immutable, toImmutable } = require('nuclear-js');
 
 const modules = require('../modules');
 
 const {
   ButtonRow,
   Button,
-  Textarea
+  Checkbox,
+  Textarea,
 } = require('optimizely-oui');
 
 module.exports = React.createClass({
@@ -15,51 +18,72 @@ module.exports = React.createClass({
 
   getInitialState() {
     return {
-      isCollapsed: true,
-      question: '',
+      isCollapsed: false,
+      errors: [],
+      formSubmitted: false,
+      form: toImmutable({
+        anonymous: false,
+        question: '',
+      }),
     };
   },
 
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {value: ''};
-  //
-  //   this.handleChange = this.handleChange.bind(this);
-  //   // this.handleSubmit = this.handleSubmit.bind(this);
-  // },
-
-  // handleChange(event) {
-  //   console.log('event.target.value', event.target.value);
-  //   this.setState({value: event.target.value});
-  // },
-
-  // handleSubmit(event) {
-  //   alert('A name was submitted: ' + this.state.value);
-  //   event.preventDefault();
-  // },
-
-  postRegularQuestion() {
-    this.postQuestion();
+  setPropertyFromEvent(event, property, value, shouldNegate = false) {
+    const valueToSet = shouldNegate ? !event.target[value] : event.target[value];
+    this.setNextState({
+      form: this.state.form.set(property, valueToSet),
+    });
   },
 
-  postAnonymousQuestion() {
-    this.postQuestion(true);
+  setNextState(nextState) {
+    // console.log('nextState', toImmutable(nextState).toJS());
+    this.setState(nextState, () => {
+      // If user has already attempted to submit form, validate form data and give user feedback.
+      if (this.state.formSubmitted) {
+        const errors = this.getErrors();
+
+        this.setState({
+          errors: errors,
+        });
+      }
+    });
   },
 
-  postQuestion(anoymous=false) {
-    let question = 'Hi. Is this thing on? I was wondering if I Script tag here - <script>//scripts</script> - Script there could #help out. *italics*, **bold** <div onclick="">Testing div with onclick event</div> <span>Testing span</span> https://google.com [Google.com](https://google.com)?';
-    question = modules.fns.sanitizeQuestionAndConvertMarkdownToHtml(question);
+  getErrors() {
+    return []
+  },
 
-    let randomHour = Math.floor(Math.random() * 24)
+  onSubmit() {
+    const errors = this.getErrors();
+
+    // If there are any errors, show error notifications and then return immediately.
+    if (errors.size) {
+      this.setState({
+        errors: errors,
+        formSubmitted: true,
+      });
+      errors.forEach(error => {
+        alert(error.message)
+      });
+      return;
+    }
+
+    // const question = 'Hi. Is this thing on? #test [#testBold](https://google.com) *italics*, **bold** [Google.com](https://google.com)?';
+    // const randomHour = Math.floor(Math.random() * 24);
+    // const date = `Wed Mar 01 2017 ${randomHour}:25:57 GMT-0800 (PST)`;
 
     const data = {
-      question: question,
-      author: anoymous ? 'Anonymous' : 'derek@optimizely.com',
-      date : `Wed Mar 01 2017 ${randomHour}:25:57 GMT-0800 (PST)`,
+      author: this.state.form.get('anonymous') ? 'Anonymous' : 'derek@optimizely.com',
+      channel: modules.enums.channel.WEB,
+      date : new Date(),
+      meeting: '9876543',
+      question: this.state.form.get('question'),
     };
+
     modules.actions.postQuestion(data)
       .done(response => {
-        this.props.getQuestions();
+        console.log('response', response);
+          this.props.getQuestions();
       })
       .fail(err => {
         console.log('There was an error retrieving questinos', err);
@@ -76,7 +100,7 @@ module.exports = React.createClass({
           width="full"
           style="highlight"
           onClick={ this.toggleQuestionBox }>
-          Ask Question
+          Ask a Question
         </Button>
       </div>
     );
@@ -88,7 +112,16 @@ module.exports = React.createClass({
         <div>
           <Textarea
             placeholder="Your question here..."
+            onChange={ _.partialRight(this.setPropertyFromEvent, 'question', 'value') }
           />
+
+          <div className="push--top">
+            <Checkbox
+              label="Submit Anonymously"
+              onChange={ _.partialRight(this.setPropertyFromEvent, 'anonymous', 'checked') }
+            />
+          </div>
+
           <div className="push--top">
             <ButtonRow
               rightGroup={[
@@ -97,21 +130,14 @@ module.exports = React.createClass({
                   style="plain"
                   width="default"
                   onClick={ this.toggleQuestionBox }>
-                  Cancel
+                  Hide
                 </Button>,
                 <Button
                   key="2"
-                  onClick={ this.postAnonymousQuestion }
-                  style="outline"
-                  width="default">
-                  Ask anonymously
-                </Button>,
-                <Button
-                  key="3"
-                  onClick={ this.postRegularQuestion }
+                  onClick={ this.onSubmit }
                   style="highlight"
                   width="default">
-                  Submit question
+                  Post
                 </Button>
               ]}
              />

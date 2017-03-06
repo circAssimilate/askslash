@@ -17,7 +17,7 @@ module.exports = React.createClass({
           Question { (this.props.currentQuestionIndex + 1) } of { this.props.questionCount }
         </div>
         <div className="flex--dead-center flex--1">
-          <div dangerouslySetInnerHTML={{__html: this.props.question }}></div>
+          <div dangerouslySetInnerHTML={{__html: modules.fns.sanitizeQuestionAndConvertMarkdownToHtml(this.props.question) }}></div>
         </div>
         <div className="question-info">
           By <span className="highlight">{ this.props.author }</span> { modules.fns.renderTimeSincePosted(this.props.date) }

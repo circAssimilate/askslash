@@ -125,9 +125,10 @@ const App = React.createClass({
 
   componentDidMount() {
     $(document).keyup(event => {
-      if (event.keyCode == 190) {
-        this.setState({presentationModeIsVisible: !this.state.presentationModeIsVisible});
-      } else if (event.keyCode == 27) {
+      // if (event.keyCode == 190) {
+      //   this.setState({presentationModeIsVisible: !this.state.presentationModeIsVisible});
+      // } else
+      if (event.keyCode == 27) {
         this.setState({presentationModeIsVisible: false});
       }
     });
