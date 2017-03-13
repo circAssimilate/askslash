@@ -102,17 +102,16 @@ router.post('/api/v1/meetings', function(request, response) {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
-    const collection = db.collection(modules.enums.collections.QUESTIONS);
+    const collection = db.collection(modules.enums.collections.MEETINGS);
 
     const meeting = {
       creator: request.body.creator,
       name: request.body.name,
       date: request.body.date,
-      description: request.body.description,
       short_id: request.body.short_id,
     };
 
-    collection.insert(question, function(err, result) {
+    collection.insert(meeting, function(err, result) {
       if (err) {
         console.error('Unable to post to collection', err);
         return response.send(err);

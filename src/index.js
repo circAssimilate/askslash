@@ -10,49 +10,20 @@ const ReactDOM = require('react-dom');
 const {
   ButtonRow,
   Button,
-  Input,
-  Textarea
 } = require('optimizely-oui');
 
 const Nav = require('./components/Nav');
 const Questions = require('./components/Questions');
 const NewQuestion = require('./components/NewQuestion');
-const Settings = require('./components/Settings');
-const MeetingCta = require('./components/MeetingCta');
-const PresentationModeQuestions = require('./components/PresentationModeQuestions');
 const Footer = require('./components/Footer');
-const Dialog = require('./ui_components/Dialog');
-
-const meetingId = 'gtm';
-const phoneNumber = '6144-OPTIFY (614-467-8439)';
-const slackShortcut = '/ask';
-const ctaIntervalInSeconds = 5;
-const selectedMeeting = {
-  name: 'Global Show & Tell',
-  id: 'gst',
-}
-
-
-const meetingList = [
-  {
-    name: "Global Show & Tell",
-    id: "gst",
-  },
-  {
-    name: "Q3 Review",
-    id: "abcd",
-  },
-  {
-    name: "GTM Kickoff",
-    id: "920d",
-  },
-];
 
 const App = React.createClass({
   getInitialState() {
     return {
       isLoading: false,
       questions: [],
+      meetings: [],
+      selectedMeeting: {},
       presentationModeIsVisible: false,
       settingsIsVisible: false,
     };
@@ -66,106 +37,48 @@ const App = React.createClass({
     this.setState({settingsIsVisible: !this.state.settingsIsVisible});
   },
 
-  getQuestions() {
+  refreshAppData() {
     modules.actions.getQuestions()
       .done(response => {
         this.setState({questions: response.questions});
       })
       .fail(err => {
-        console.log('There was an error retrieving questinos', err);
+        console.log('There was an error retrieving questions', err);
+      });
+
+    modules.actions.getMeetings()
+      .done(response => {
+        this.setState({meetings: response.meetings});
+        this.setState({selectedMeeting: this.state.meetings[0]});
+      })
+      .fail(err => {
+        console.log('There was an error retrieving meetings', err);
       });
   },
 
-  meetingDialogContent() {
-    return(
-      <div>
-        <p>Give us some more details on this meeting</p>
-        <div className="push--bottom">
-          <Input
-            placeholder="Meeting Name"
-            type="text"/>
-        </div>
-        <div className="push--bottom">
-          <Input
-            placeholder="Short Meeting ID"
-            type="text"/>
-        </div>
-        <div className="push--bottom">
-          <Textarea placeholder="This meeting is for our monthly, company-wide meeting…" />
-        </div>
-      </div>
-    )
-  },
-
   componentWillMount() {
-    this.getQuestions();
+    this.refreshAppData();
   },
 
-  renderDefaultView() {
+  render() {
     return (
       <div className="main">
         <div className="display--none" dangerouslySetInnerHTML={ {__html: ouiIcons} }></div>
-
-        <Dialog
-          dialogTitle="Create a Meeting"
-          dialogContent={ this.meetingDialogContent }
-          onSubmit={ this.getQuestions }
-          submitButtonText="Create"
-          cancelButtonText="Cancel"
-          style='narrow'
-        />
-
         <Nav
-          selectedMeeting={ selectedMeeting }
-          meetingList={ meetingList }
-          togglePresentationMode={ this.togglePresentationMode }
-          toggleSettingsView={ this.toggleSettingsView }
-        />
-        <MeetingCta
-          meetingId= { meetingId }
-          phoneNumber={ phoneNumber }
-          slackShortcut={ slackShortcut }
-          ctaIntervalInSeconds= { ctaIntervalInSeconds }
+          refreshAppData={ this.refreshAppData }
+          meetings={ this.state.meetings }
+          questions={ this.state.questions }
+          meetingName={ this.state.selectedMeeting && this.state.selectedMeeting.name || '' }
+          meetingId={ this.state.selectedMeeting && this.state.selectedMeeting.short_id || '' }
         />
         <NewQuestion
-          getQuestions={ this.getQuestions }
+          refreshAppData={ this.refreshAppData }
         />
-        <Questions questions={ this.state.questions }
-        />
+        <Questions questions={ this.state.questions } />
         <Footer />
       </div>
     );
   },
-
-  renderPresentationMode() {
-    return(
-      <PresentationModeQuestions
-        togglePresentationMode={ this.togglePresentationMode }
-        questions={ this.state.questions }
-      />
-    );
-  },
-
-  renderSettingsView() {
-    return(
-      <div className="main">
-        <div className="display--none" dangerouslySetInnerHTML={ {__html: ouiIcons} }></div>
-        <Settings toggleSettingsView={ this.toggleSettingsView } />
-      </div>
-    );
-  },
-
-  render() {
-    if (this.state.presentationModeIsVisible) {
-      return this.renderPresentationMode();
-    }
-
-    if(this.state.settingsIsVisible) {
-      return this.renderSettingsView();
-    }
-
-    return this.renderDefaultView();
-  }
 });
 
 ReactDOM.render(

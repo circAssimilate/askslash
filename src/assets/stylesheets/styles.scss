@@ -55,7 +55,7 @@ footer a:link, footer a:visited {
 }
 
 .question-info {
-  font-size: 10px;
+  font-size: 12px;
   text-align: right;
 }
 
@@ -73,14 +73,6 @@ footer a:link, footer a:visited {
   user-select: none;
 }
 
-.hidden {
-  display: none !important;
-}
-
-.hashtag {
-  color: $highlight-secondary-color;
-}
-
 .highlight {
   color: $highlight-secondary-color;
 }
@@ -89,14 +81,21 @@ footer a:link, footer a:visited {
   position: absolute;
   top: 0;
   left: 0;
-  font-size: 24px;
+  font-size: 30px;
   background: url('/static/img/bg.svg') no-repeat 0 30% $background-primary-color;
   color: $text-primary-color;
   height: 100%;
   width: 100%;
 }
 
-[data-ui-hook="presentation-mode"] .hashtag {
+[data-ui-hook="presentation-mode"] strong {
+  font-weight: 500;
+}
+
+[data-ui-hook="presentation-mode"] a:link,
+[data-ui-hook="presentation-mode"] a:hover,
+[data-ui-hook="presentation-mode"] a:visited,
+[data-ui-hook="presentation-mode"] a:active {
   color: $highlight-primary-color;
 }
 
@@ -104,37 +103,74 @@ footer a:link, footer a:visited {
   color: $highlight-primary-color;
 }
 
-
 [data-ui-hook="presentation-mode-question-wrapper"] {
-  padding: 15% 20%;
+  padding: 15% 10%;
   background-color: rgba(0, 71, 102, 0.4);
-}
-
-[data-ui-hook="presentation-mode"] blockquote {
-  margin: 0 auto;
 }
 
 [data-ui-hook="presentation-mode"] .question-info {
   margin: 0 auto;
 }
 
-
 [data-ui-hook="presentation-mode"] .navigation-info {
-  margin: 0 auto;
-  font-size: 14px;
-}
-
-.exit {
   position: absolute;
   font-size: 10px;
   left: 10px;
   top: 8px;
 }
 
-h1 {
-  font-size: 22px;
+[data-ui-hook="presentation-mode"] p:before {
+  color: #ffffff;
+  content: open-quote;
+  margin-right: 0.25em;
 }
 
-.dialog-background {
+[data-ui-hook="presentation-mode"] p {
+  margin-bottom: 0;
+  display: inline-block;
+}
+
+.exit {
+  position: absolute;
+  font-size: 10px;
+  right: 10px;
+  top: 8px;
+}
+
+.dialog-container {
   background-color: rgba(0,0,0,0.3);
+  z-index: 1000;
+}
+
+.select {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+}
+
+.progress {
+  margin: 0 auto;
+  width: 80%;
+  height: 5px;
+  position: relative;
+  top: 14px;
+}
+
+.question-cta {
+  position: relative;
+}
+
+.question-navigator {
+  position: absolute;
+  padding: 0.2% 2%;
+  top: 0;
+  font-size: 18px;
+}
+
+.previous-question {
+  left: 4.5%;
+}
+
+.next-question {
+  right: 4.5%;
 }

@@ -1,3 +1,4 @@
+const $ = require('jquery');
 const React = require('react');
 
 const {
@@ -9,40 +10,42 @@ module.exports = React.createClass({
   propTypes: {
     dialogTitle: React.PropTypes.string.isRequired,
     dialogContent: React.PropTypes.func.isRequired,
-    onSubmit: React.PropTypes.func,
-    submitButtonText: React.PropTypes.string,
-    cancelButtonText: React.PropTypes.string,
-    style: React.PropTypes.string,
+    onSubmit: React.PropTypes.func.isRequired,
+    hideDialog: React.PropTypes.func.isRequired,
+    isSubmitDisabled: React.PropTypes.bool.isRequired,
+    submitButtonText: React.PropTypes.string.isRequired,
+    cancelButtonText: React.PropTypes.string.isRequired,
+    style: React.PropTypes.string.isRequired,
   },
 
   getInitialState() {
     return {
-      hidden: false,
       newMeeting: {},
     };
   },
 
-  hideDialog() {
-    this.setState({'hidden': true});
+  componentDidMount: function() {
+    $(document.body).on('keydown', this.handleKeyDown);
   },
 
-  onCancel() {
-    this.hideDialog();
+  componentWillUnmount() {
+    $(document.body).off('keydown', this.handleKeyDown);
+  },
+
+  handleKeyDown(event) {
+    if (event.keyCode == 27) { // Esc
+      this.props.hideDialog();
+    }
   },
 
   onSubmit() {
-    console.log('SUBMITTTED');
-
-    this.hideDialog();
+    this.props.onSubmit();
+    this.props.hideDialog();
   },
 
-  renderHidden() {
-    return null;
-  },
-
-  renderExpanded() {
+  render() {
     return (
-      <div className="overlay dialog-background">
+      <div className="overlay dialog-container" onKeyDown={ this.handleKeyDown }>
         <div className={ this.props.style === 'narrow' ? 'dialog dialog--narrow' : 'dialog' }>
           <div className="dialog__header">
             <div className="dialog__title">{ this.props.dialogTitle }</div>
@@ -57,20 +60,21 @@ module.exports = React.createClass({
                   key="1"
                   style="plain"
                   width="default"
-                  onClick={ this.onCancel }>
+                  onClick={ this.props.hideDialog }>
                   { this.props.cancelButtonText }
                 </Button>,
                 <Button
                   key="2"
                   style="highlight"
                   width="default"
+                  isDisabled={ this.props.isSubmitDisabled }
                   onClick={ this.onSubmit }>
                   { this.props.submitButtonText }
                 </Button>
               ]}
             />
           </div>
-          <div onClick={ this.onCancel }
+          <div onClick={ this.props.hideDialog }
                 className="dialog__close">
             <svg className="icon">
               <use xlinkHref="#close-16"></use>
@@ -80,12 +84,4 @@ module.exports = React.createClass({
       </div>
     );
   },
-
-  render() {
-    if (this.state.hidden) {
-      return this.renderHidden();
-    } else {
-      return this.renderExpanded();
-    }
-  }
 });

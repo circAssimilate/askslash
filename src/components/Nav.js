@@ -1,57 +1,100 @@
+const _ = require('lodash');
 const $ = require('jquery');
 const React = require('react');
+const { Immutable, toImmutable } = require('nuclear-js');
 
-const { ArrowsInline } = require('optimizely-oui');
+const NewMeeting = require('./NewMeeting');
+const MeetingCta = require('./MeetingCta');
+const PresentationMode = require('./PresentationMode');
+const Settings = require('./Settings');
+
+const phoneNumber = '6144-OPTIFY (614-467-8439)';
+const slackShortcut = '/ask';
+const ctaIntervalInSeconds = 5;
+
+const {
+  ArrowsInline,
+} = require('optimizely-oui');
 
 module.exports = React.createClass({
   propTypes: {
-    selectedMeeting: React.PropTypes.object.isRequired,
-    meetingList: React.PropTypes.array.isRequired,
-    togglePresentationMode: React.PropTypes.func.isRequired,
-    toggleSettingsView: React.PropTypes.func.isRequired,
+    meetingName: React.PropTypes.string.isRequired,
+    meetingId: React.PropTypes.string.isRequired,
+    refreshAppData: React.PropTypes.func.isRequired,
+    meetings: React.PropTypes.array.isRequired,
+    questions: React.PropTypes.array.isRequired,
   },
 
   getInitialState() {
     return {
       menuOpen: false,
+      subMenuVisible: toImmutable({
+        newMeeting: false,
+        presentationMode: false,
+        settings: false,
+      }),
     };
   },
 
-  componentDidMount() {
-    $(document).keyup(event => {
-      if (event.keyCode == 27) {
-        this.setState({menuOpen: false});
-      }
+  toggleSubMenuVisibility(property) {
+    const negateValue = !this.state.subMenuVisible.get(property);
+    this.setState({
+      subMenuVisible: this.state.subMenuVisible.set(property, negateValue),
     });
-
-    $(document).click(event => {
-      if(!$(event.target).closest('[data-ui-hook="current-meeting"]').length) {
-        if($('[data-ui-hook="nav-list"]').is(":visible")) {
-          this.setState({menuOpen: false});
-        }
-      }
-    })
   },
 
-  toggleMenu() {
+  componentDidMount: function() {
+    $(document.body).on('keydown', this.handleKeyDown);
+    $(document.body).on('click', this.handleClick);
+  },
+
+  componentWillUnMount: function() {
+    $(document.body).off('keydown', this.handleKeyDown);
+    $(document.body).off('click', this.handleClick);
+  },
+
+  handleClick(event) {
+    if(!$(event.target).closest('[data-ui-hook="current-meeting"]').length) {
+      if($('[data-ui-hook="nav-list"]').is(":visible")) {
+        this.setState({menuOpen: false});
+      }
+    }
+  },
+
+  handleKeyDown(event) {
+    if (event.keyCode == 27) { // Esc
+      if (this.state.menuOpen) {
+        this.setState({menuOpen: false});
+      } else {
+        if (!$('.dialog-container').length) {
+          this.toggleSubMenuVisibility('presentationMode');
+        }
+      }
+    }
+  },
+
+  toggleMenuVisibility() {
     this.setState({menuOpen: !this.state.menuOpen});
   },
 
   render() {
     return(
-      <div>
+      <div onClick={ this.handleKeyDown }>
+        { this.props.meetings.length === 0 || this.state.subMenuVisible.get('newMeeting') ? <NewMeeting  refreshAppData={ this.props.refreshAppData } toggleVisibility={ () => { this.toggleSubMenuVisibility('newMeeting') } } /> : '' }
+        { this.state.subMenuVisible.get('presentationMode') ? <PresentationMode questions={ this.props.questions } refreshAppData={ this.props.refreshAppData } toggleVisibility={ () => { this.toggleSubMenuVisibility('presentationMode') } } /> : '' }
+        { this.state.subMenuVisible.get('settings') ? <Settings refreshAppData={ this.props.refreshAppData } toggleVisibility={ () => { this.toggleSubMenuVisibility('settings') } } /> : '' }
         <nav className="reverse text--center">
           <div className="dropdown-group">
             <h1 data-ui-hook="current-meeting"
                 className="display-inline--block noselect"
-                onMouseDown={ this.toggleMenu }
+                onMouseDown={ this.toggleMenuVisibility }
                 onMouseUp={ this.props.onMouseUp }>
-              Ask<span className="push-half--sides">/</span><span className="weight--bold">{ this.props.selectedMeeting.name }</span> <ArrowsInline direction={ this.state.menuOpen ? 'up' : 'down' } />
+              Ask<span className="push-half--sides">/</span><span className="weight--bold">{ this.props.meetingName }</span> <ArrowsInline direction={ this.state.menuOpen ? 'up' : 'down' } />
             </h1>
             <ul data-ui-hook="nav-list"
                 style={{display: this.state.menuOpen ? 'block' : 'none'}}
                 className="dropdown width--200">
-              <li onClick={ this.props.togglePresentationMode }
+              <li onClick={ () => { this.toggleSubMenuVisibility('presentationMode') } }
                   className="dropdown__item">
                 <a className="dropdown__block-link">
                   <div className="flex">
@@ -61,12 +104,12 @@ module.exports = React.createClass({
                       </svg>
                     </span>
                     <span className="flex flex-align--center">
-                      Enter Presentation Mode
+                      { this.state.subMenuVisible.get('presentationMode') ? 'Exit' : 'Enter' } Presentation Mode
                     </span>
                   </div>
                 </a>
               </li>
-              <li onClick={ this.props.toggleSettingsView }
+              <li onClick={ () => { this.toggleSubMenuVisibility('settings') } }
                   className="dropdown__item">
                 <a className="flex">
                   <span className="flex flex-align--center">
@@ -90,7 +133,7 @@ module.exports = React.createClass({
                     Meeting Options
                   </span>
                 </a>
-                <a className="dropdown__block-link">Create Meeting</a>
+                <a className="dropdown__block-link" onClick={ () => { this.toggleSubMenuVisibility('newMeeting') } }>Create Meeting</a>
                 <a className="dropdown__block-link">Delete Meeting</a>
                 <a className="dropdown__block-link">Archive All Questions</a>
                 <a className="dropdown__block-link">Show Archived Questions</a>
@@ -106,9 +149,9 @@ module.exports = React.createClass({
                     Meetings
                   </span>
                 </a>
-                { this.props.meetingList.map((meeting, index) => {
+                { this.props.meetings.map((meeting, index) => {
                   return (
-                    <a data-meeting-id={ meeting.id }
+                    <a data-meeting-id={ meeting.short_id }
                        className="dropdown__block-link"
                        key={index}>
                       { meeting.name }
@@ -118,6 +161,12 @@ module.exports = React.createClass({
               </li>
             </ul>
           </div>
+          <MeetingCta
+            meetingId= { this.props.meetingId }
+            phoneNumber={ phoneNumber }
+            slackShortcut={ slackShortcut }
+            ctaIntervalInSeconds= { ctaIntervalInSeconds }
+          />
         </nav>
       </div>
     );
