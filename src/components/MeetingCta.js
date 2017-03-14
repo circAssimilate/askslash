@@ -4,7 +4,7 @@ const { ArrowsInline } = require('optimizely-oui');
 
 module.exports = React.createClass({
   propTypes: {
-    meetingId: React.PropTypes.string.isRequired,
+    meetingShortId: React.PropTypes.string.isRequired,
     slackShortcut: React.PropTypes.string,
     phoneNumber: React.PropTypes.string,
     ctaIntervalInSeconds: React.PropTypes.number,
@@ -23,7 +23,7 @@ module.exports = React.createClass({
   renderSlack: function() {
     return (
       <div className="reverse text--center question-cta">
-        Ask a question by typing <span className="color--brand">{this.props.slackShortcut} { this.props.meetingId } // and your question</span> anywhere in <span className="color--warning">Slack</span>
+        Ask a question by typing <span className="color--brand">{this.props.slackShortcut} { this.props.meetingShortId } // and your question</span> anywhere in <span className="color--warning">Slack</span>
       </div>
     );
   },
@@ -31,7 +31,7 @@ module.exports = React.createClass({
   renderPhone: function() {
     return (
       <div className="reverse text--center question-cta">
-        Text <span className="color--brand">{ this.props.meetingId } // and your question</span> to <span className="color--warning">{ this.props.phoneNumber }</span>
+        Text <span className="color--brand">{ this.props.meetingShortId } // and your question</span> to <span className="color--warning">{ this.props.phoneNumber }</span>
       </div>
     );
   },

@@ -1,6 +1,7 @@
 require('./assets/stylesheets/base.scss');
 require('./assets/stylesheets/styles.scss');
 
+const _ = require('lodash');
 const $ = require('jquery');
 const modules = require('./modules');
 const ouiIcons = require('oui-icons');
@@ -20,6 +21,7 @@ const Footer = require('./components/Footer');
 const App = React.createClass({
   getInitialState() {
     return {
+      userId: null,
       isLoading: false,
       questions: [],
       meetings: [],
@@ -48,8 +50,11 @@ const App = React.createClass({
 
     modules.actions.getMeetings()
       .done(response => {
-        this.setState({meetings: response.meetings});
-        this.setState({selectedMeeting: this.state.meetings[0]});
+        const selectedMeeting = _.find(response.meetings, ['_id', modules.actions.getMeetingId()]);
+        this.setState({
+          meetings: response.meetings,
+          selectedMeeting: selectedMeeting || response.meetings[0],
+        });
       })
       .fail(err => {
         console.log('There was an error retrieving meetings', err);
@@ -57,6 +62,7 @@ const App = React.createClass({
   },
 
   componentWillMount() {
+    this.setState({userId: modules.actions.getOrCreateUserId()});
     this.refreshAppData();
   },
 
@@ -68,8 +74,9 @@ const App = React.createClass({
           refreshAppData={ this.refreshAppData }
           meetings={ this.state.meetings }
           questions={ this.state.questions }
+          meetingId={ this.state.selectedMeeting && this.state.selectedMeeting._id || '' }
           meetingName={ this.state.selectedMeeting && this.state.selectedMeeting.name || '' }
-          meetingId={ this.state.selectedMeeting && this.state.selectedMeeting.short_id || '' }
+          meetingShortId={ this.state.selectedMeeting && this.state.selectedMeeting.short_id || '' }
         />
         <NewQuestion
           refreshAppData={ this.refreshAppData }

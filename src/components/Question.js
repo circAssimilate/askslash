@@ -11,10 +11,9 @@ module.exports = React.createClass({
 
   render() {
     return(
-      <li className="push--ends question"
-          data-question-index={ this.props.index } >
+      <li className="push--ends question">
         <div dangerouslySetInnerHTML={{__html: modules.fns.sanitizeQuestionAndConvertMarkdownToHtml(this.props.question) }}></div>
-        <div className="question-info">
+        <div className="question-info push-double--top">
           By <span className="highlight">{ this.props.author }</span> { modules.fns.renderTimeSincePosted(this.props.date) } via { this.props.channel }
         </div>
       </li>

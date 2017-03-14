@@ -1,9 +1,13 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const modules = require('./src/modules');
-const mongodb = require('mongodb');
 const path = require('path');
 const router = express.Router();
+
+const {
+  MongoClient,
+  ObjectId,
+} = require('mongodb');
 
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
@@ -14,13 +18,6 @@ router.use('/images/', express.static(path.join(__dirname, '/src/assets/static/i
 router.get('/', function(request, response) {
   response.sendFile(__dirname + '/dist/index.html')
 });
-
-// debug
-router.get('/users/:userId/books/:bookId', function (request, response) {
-  response.send(request.params)
-});
-
-const MongoClient = mongodb.MongoClient;
 
 /* QUESTIONS */
 
@@ -35,7 +32,6 @@ router.get('/api/v1/questions', function(request, response) {
       if (err) {
         return console.error('Unable to get collection', err);
       }
-      console.log('Returned results for', modules.enums.collections.QUESTIONS);
       response.send({
         'questions': result,
       });
@@ -65,7 +61,6 @@ router.post('/api/v1/questions', function(request, response) {
         console.error('Unable to post to collection', err);
         return response.send(err);
       }
-      console.log('Returned results for', modules.enums.collections.QUESTIONS);
       response.send(result.ops[0]);
     });
 
@@ -87,7 +82,6 @@ router.get('/api/v1/meetings', function(request, response) {
       if (err) {
         return console.error('Unable to get collection', err);
       }
-      console.log('Returned results for', modules.enums.collections.MEETINGS);
       response.send({
         'meetings': result,
       });
@@ -111,16 +105,52 @@ router.post('/api/v1/meetings', function(request, response) {
       short_id: request.body.short_id,
     };
 
+    let counter = 0;
+    while(!meeting.short_id && counter < 10000) {
+      counter = counter + 1;
+      const randomShortId = String(Math.floor(Math.random() * 10000));
+      const itemLookup = collection.find({short_id: randomShortId}, {_id: 1}).toArray((err, result) => {
+        if(err) {
+          return console.log('There was an error', err);
+        }
+        return result[0];
+      });
+      if (!itemLookup) {
+        meeting.short_id = randomShortId;
+      }
+    }
+
     collection.insert(meeting, function(err, result) {
       if (err) {
         console.error('Unable to post to collection', err);
         return response.send(err);
       }
-      console.log('Returned results for', modules.enums.collections.MEETINGS);
       response.send(result.ops[0]);
     });
 
     db.close();
+  });
+});
+
+// create meeting
+router.delete('/api/v1/meetings/:meetingId', function(request, response) {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+    if (err) {
+      return console.error('Unable to connect to the server', err);
+    }
+
+    const collection = db.collection(modules.enums.collections.MEETINGS);
+    const meetingId = request.params.meetingId;
+
+    collection.deleteOne({ _id: ObjectId(meetingId) }, function(err, result) {
+      if (err) {
+        console.error('Unable to delete meeting', err);
+        return response.send(err);
+      }
+    });
+
+    db.close();
+
   });
 });
 

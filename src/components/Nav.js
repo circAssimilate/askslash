@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const $ = require('jquery');
+const modules = require('../modules');
 const React = require('react');
 const { Immutable, toImmutable } = require('nuclear-js');
 
@@ -20,6 +21,7 @@ module.exports = React.createClass({
   propTypes: {
     meetingName: React.PropTypes.string.isRequired,
     meetingId: React.PropTypes.string.isRequired,
+    meetingShortId: React.PropTypes.string.isRequired,
     refreshAppData: React.PropTypes.func.isRequired,
     meetings: React.PropTypes.array.isRequired,
     questions: React.PropTypes.array.isRequired,
@@ -71,6 +73,17 @@ module.exports = React.createClass({
         }
       }
     }
+  },
+
+  changeMeeting(meetingId) {
+    modules.actions.setMeetingId(meetingId, this.props.refreshAppData);
+  },
+
+  deleteMeeting() {
+    modules.actions.deleteMeeting(this.props.meetingId)
+      .done(response => {
+        this.props.refreshAppData();
+      });
   },
 
   toggleMenuVisibility() {
@@ -134,7 +147,7 @@ module.exports = React.createClass({
                   </span>
                 </a>
                 <a className="dropdown__block-link" onClick={ () => { this.toggleSubMenuVisibility('newMeeting') } }>Create Meeting</a>
-                <a className="dropdown__block-link">Delete Meeting</a>
+                <a className="dropdown__block-link" onClick={ this.deleteMeeting }>Delete Meeting</a>
                 <a className="dropdown__block-link">Archive All Questions</a>
                 <a className="dropdown__block-link">Show Archived Questions</a>
               </li>
@@ -151,7 +164,8 @@ module.exports = React.createClass({
                 </a>
                 { this.props.meetings.map((meeting, index) => {
                   return (
-                    <a data-meeting-id={ meeting.short_id }
+                    <a onClick={ () => { this.changeMeeting(meeting._id) } }
+                       data-id={ meeting._id }
                        className="dropdown__block-link"
                        key={index}>
                       { meeting.name }
@@ -162,7 +176,7 @@ module.exports = React.createClass({
             </ul>
           </div>
           <MeetingCta
-            meetingId= { this.props.meetingId }
+            meetingShortId= { this.props.meetingShortId }
             phoneNumber={ phoneNumber }
             slackShortcut={ slackShortcut }
             ctaIntervalInSeconds= { ctaIntervalInSeconds }

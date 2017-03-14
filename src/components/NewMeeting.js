@@ -86,8 +86,8 @@ module.exports = React.createClass({
     };
     modules.actions.createMeeting(data)
       .done(response => {
-        console.log('response', response);
-          this.props.refreshAppData();
+        const meetingId = response._id;
+        modules.actions.setMeetingId(meetingId, this.props.refreshAppData);
       });
   },
 
