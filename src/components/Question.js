@@ -33,7 +33,7 @@ module.exports = React.createClass({
               <Button
                 key="2"
                 onClick={ () => {
-                  if (this.props.question.archived) {
+                  if (!this.props.question.archived) {
                     this.props.archiveQuestion(this.props.question._id)
                   } else {
                   }
