@@ -1,7 +1,7 @@
 exports.channel = {
-  WEB: 'Web',
+  WEB: 'web',
   SLACK: 'Slack',
-  PHONE: 'Phone',
+  PHONE: 'sms',
 };
 
 exports.collections = {

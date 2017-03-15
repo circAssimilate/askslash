@@ -4,8 +4,9 @@ $text-primary-color: #fff;
 $text-secondary-color: #000;
 $highlight-primary-color: #ADE7FF;
 $highlight-secondary-color: #0081BA;
-$max-width: 800px;
-$min-width: 600px;
+$max-width: 750px;
+$min-width: 400px;
+$dialog-container-z-index: 1000;
 
 html {
   background: url('/images/bg.svg') no-repeat 45% 0 $background-primary-color;
@@ -13,8 +14,6 @@ html {
 
 .main {
   max-width: $max-width;
-  margin: 25px auto;
-  padding: 10px 40px;
 }
 
 section {
@@ -22,8 +21,6 @@ section {
   max-width: $max-width;
   min-width: $min-width;
   border-radius: 5px;
-  margin: 25px auto 0 auto;
-  padding: 20px;
 }
 
 .aligner {
@@ -55,7 +52,7 @@ footer a:link, footer a:visited {
 }
 
 .question-info {
-  font-size: 12px;
+  font-size: 10px;
   text-align: right;
 }
 
@@ -108,10 +105,6 @@ footer a:link, footer a:visited {
   background-color: rgba(0, 71, 102, 0.4);
 }
 
-[data-ui-hook="presentation-mode"] .question-info {
-  margin: 0 auto;
-}
-
 [data-ui-hook="presentation-mode"] .navigation-info {
   position: absolute;
   font-size: 10px;
@@ -126,7 +119,7 @@ footer a:link, footer a:visited {
 }
 
 [data-ui-hook="presentation-mode"] p {
-  margin-bottom: 0;
+  margin-bottom: 0; // This is needed for the auto-generated markdown translation paragraph element
   display: inline-block;
 }
 
@@ -138,8 +131,9 @@ footer a:link, footer a:visited {
 }
 
 .dialog-container {
+  z-index: $dialog-container-z-index;
+  position: fixed;
   background-color: rgba(0,0,0,0.3);
-  z-index: 1000;
 }
 
 .select {
@@ -149,7 +143,6 @@ footer a:link, footer a:visited {
 }
 
 .progress {
-  margin: 0 auto;
   width: 80%;
   height: 5px;
   position: relative;

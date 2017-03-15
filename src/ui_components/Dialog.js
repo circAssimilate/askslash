@@ -40,7 +40,6 @@ module.exports = React.createClass({
 
   onSubmit() {
     this.props.onSubmit();
-    this.props.hideDialog();
   },
 
   render() {

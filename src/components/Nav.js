@@ -23,6 +23,8 @@ module.exports = React.createClass({
     meetingId: React.PropTypes.string.isRequired,
     meetingShortId: React.PropTypes.string.isRequired,
     refreshAppData: React.PropTypes.func.isRequired,
+    toggleShowArchived: React.PropTypes.func.isRequired,
+    archivedVisible: React.PropTypes.bool.isRequired,
     meetings: React.PropTypes.array.isRequired,
     questions: React.PropTypes.array.isRequired,
   },
@@ -146,10 +148,21 @@ module.exports = React.createClass({
                     Meeting Options
                   </span>
                 </a>
-                <a className="dropdown__block-link" onClick={ () => { this.toggleSubMenuVisibility('newMeeting') } }>Create Meeting</a>
-                <a className="dropdown__block-link" onClick={ this.deleteMeeting }>Delete Meeting</a>
-                <a className="dropdown__block-link">Archive All Questions</a>
-                <a className="dropdown__block-link">Show Archived Questions</a>
+                <a className="dropdown__block-link"
+                   onClick={ () => { this.toggleSubMenuVisibility('newMeeting') } }>
+                  Create Meeting
+                </a>
+                <a className="dropdown__block-link"
+                   onClick={ this.deleteMeeting }>
+                  Delete Meeting
+                </a>
+                <a className="dropdown__block-link">
+                  Archive All Questions
+                </a>
+                <a className="dropdown__block-link"
+                   onClick={ this.props.toggleShowArchived }>
+                  { this.props.archivedVisible ? 'Hide' : 'Show' } Archived Questions
+                </a>
               </li>
               <li className="dropdown__item">
                 <a className="flex">

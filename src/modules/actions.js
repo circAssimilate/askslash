@@ -2,9 +2,10 @@ const $ = require('jquery');
 const enums = require('./enums');
 const fns = require('./fns');
 
-exports.getQuestions = () => {
+exports.getQuestions = (meeting = {}) => {
+  let url = meeting._id ? `/api/v1/questions/${meeting._id}` : '/api/v1/questions';
   return $.ajax({
-    url: '/api/v1/questions',
+    url: url,
     type: 'GET',
   });
 };
@@ -15,6 +16,15 @@ exports.postQuestion = (data) => {
     type: 'POST',
     contentType: 'application/json',
     data: JSON.stringify(data),
+  });
+};
+
+exports.updateQuestion = (path) => {
+  let url = `/api/v1/questions/${path}`;
+  return $.ajax({
+    url: url,
+    type: 'PUT',
+    contentType: 'application/json',
   });
 };
 

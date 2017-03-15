@@ -88,6 +88,7 @@ module.exports = React.createClass({
       .done(response => {
         const meetingId = response._id;
         modules.actions.setMeetingId(meetingId, this.props.refreshAppData);
+        this.props.toggleVisibility();
       });
   },
 

@@ -1,10 +1,15 @@
+const _ = require('lodash');
 const React = require('react');
+
+const modules = require('../modules');
 
 const Question = require('./Question');
 
 module.exports = React.createClass({
   propTypes: {
     questions: React.PropTypes.array.isRequired,
+    showArchived: React.PropTypes.bool.isRequired,
+    refreshAppData: React.PropTypes.func.isRequired,
   },
 
   getInitialState() {
@@ -13,9 +18,17 @@ module.exports = React.createClass({
     };
   },
 
+  archiveQuestion(questionId) {
+    const path = `${questionId}/archive`;
+    modules.actions.updateQuestion(path)
+      .done(response => {
+        this.props.refreshAppData();
+      });
+  },
+
   renderNoQuestions() {
     return(
-      <section>
+      <section className="soft-double">
         <div className="text--center">
           There are currently no questions for this meeting.
         </div>
@@ -24,18 +37,19 @@ module.exports = React.createClass({
   },
 
   renderQuestions() {
-     return(
-      <section>
+    const showArchived = this.props.showArchived;
+    return(
+      <section className="anchor--middle soft-double--sides soft--ends">
         <ol>
           { this.props.questions.map((question) => {
-            return (
-              <Question
-                question={ question.question }
-                date={ question.date }
-                channel={ question.channel }
-                author= { question.author }
-                key= { question._id } />
-            );
+            if (!question.archived || showArchived) {
+              return (
+                <Question
+                  question={ question }
+                  archiveQuestion={ this.archiveQuestion }
+                  key= { question._id } />
+              );
+            }
           })}
         </ol>
       </section>
@@ -43,7 +57,7 @@ module.exports = React.createClass({
   },
 
   render() {
-    if (this.props.questions.length) {
+    if (this.props.questions.length && _.find(this.props.questions, ['archived', false])) {
       return this.renderQuestions();
     }
     return this.renderNoQuestions();

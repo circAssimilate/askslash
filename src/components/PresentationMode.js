@@ -70,7 +70,7 @@ module.exports = React.createClass({
         <div className="navigation-info">
           { currentVisibleQuestion } of { questionCount }
         </div>
-        <div className="progress">
+        <div className="progress anchor--middle">
           <div className="progress__bar" style={{width: (currentVisibleQuestion / questionCount) * 100 + '%'}} aria-valuenow={ (currentVisibleQuestion / questionCount) * 100 } aria-valuemin="0" aria-valuemax="100"></div>
         </div>
         <div className="exit noselect" onClick={ this.props.toggleVisibility }>X</div>

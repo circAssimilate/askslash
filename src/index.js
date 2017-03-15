@@ -28,6 +28,7 @@ const App = React.createClass({
       selectedMeeting: {},
       presentationModeIsVisible: false,
       settingsIsVisible: false,
+      showArchived: false,
     };
   },
 
@@ -39,15 +40,11 @@ const App = React.createClass({
     this.setState({settingsIsVisible: !this.state.settingsIsVisible});
   },
 
-  refreshAppData() {
-    modules.actions.getQuestions()
-      .done(response => {
-        this.setState({questions: response.questions});
-      })
-      .fail(err => {
-        console.log('There was an error retrieving questions', err);
-      });
+  toggleShowArchived() {
+    this.setState({showArchived: !this.state.showArchived});
+  },
 
+  refreshAppData() {
     modules.actions.getMeetings()
       .done(response => {
         const selectedMeeting = _.find(response.meetings, ['_id', modules.actions.getMeetingId()]);
@@ -55,6 +52,14 @@ const App = React.createClass({
           meetings: response.meetings,
           selectedMeeting: selectedMeeting || response.meetings[0],
         });
+
+        modules.actions.getQuestions(this.state.selectedMeeting)
+          .done(response => {
+            this.setState({questions: response.questions});
+          })
+          .fail(err => {
+            console.log('There was an error retrieving questions', err);
+          });
       })
       .fail(err => {
         console.log('There was an error retrieving meetings', err);
@@ -68,9 +73,11 @@ const App = React.createClass({
 
   render() {
     return (
-      <div className="main">
+      <div className="main anchor--middle push-triple--ends">
         <div className="display--none" dangerouslySetInnerHTML={ {__html: ouiIcons} }></div>
         <Nav
+          toggleShowArchived={ this.toggleShowArchived }
+          archivedVisible={ this.state.showArchived }
           refreshAppData={ this.refreshAppData }
           meetings={ this.state.meetings }
           questions={ this.state.questions }
@@ -79,9 +86,14 @@ const App = React.createClass({
           meetingShortId={ this.state.selectedMeeting && this.state.selectedMeeting.short_id || '' }
         />
         <NewQuestion
+          selectedMeeting={ this.state.selectedMeeting }
           refreshAppData={ this.refreshAppData }
         />
-        <Questions questions={ this.state.questions } />
+        <Questions
+          showArchived={ this.state.showArchived }
+          refreshAppData={ this.refreshAppData }
+          questions={ this.state.questions }
+        />
         <Footer />
       </div>
     );

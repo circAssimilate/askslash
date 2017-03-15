@@ -14,7 +14,7 @@ module.exports = React.createClass({
         <div dangerouslySetInnerHTML={{__html: modules.fns.sanitizeQuestionAndConvertMarkdownToHtml(this.props.question) }}
              className="flex--dead-center flex--1">
         </div>
-        <div className="question-info">
+        <div className="question-info anchor--middle">
           By <span className="highlight">{ this.props.author }</span> { modules.fns.renderTimeSincePosted(this.props.date) }
         </div>
       </div>
