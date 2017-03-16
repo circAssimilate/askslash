@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const $ = require('jquery');
 const React = require('react');
 
@@ -5,15 +6,13 @@ const PresentationModeQuestion = require('./PresentationModeQuestion');
 
 module.exports = React.createClass({
   propTypes: {
+    hideComponent: React.PropTypes.func.isRequired,
     questions: React.PropTypes.array.isRequired,
-    refreshAppData: React.PropTypes.func.isRequired,
-    toggleVisibility: React.PropTypes.func.isRequired,
   },
 
   getInitialState() {
     return {
       currentQuestionIndex: 0,
-      toggleVisibility: React.PropTypes.func.isRequired,
     };
   },
 
@@ -21,7 +20,7 @@ module.exports = React.createClass({
     $(document.body).on('keydown', this.handleKeyDown);
   },
 
-  componentWillUnMount: function() {
+  componentWillUnmount: function() {
     $(document.body).off('keydown', this.handleKeyDown);
   },
 
@@ -51,35 +50,45 @@ module.exports = React.createClass({
     });
   },
 
-  render() {
+  renderNoQuestions() {
+    return(
+      <div className="flex flex--column presentation-mode">
+        <div className="flex--1 flex flex--column presentation-mode-question-wrapper">
+          <div className="flex--dead-center flex--1 weight--light">
+            There are currently no questions for this meeting.
+          </div>
+        </div>
+      </div>
+    );
+  },
+
+  renderQuestions() {
     const currentQuestion = this.props.questions[this.state.currentQuestionIndex];
     const currentVisibleQuestion = this.state.currentQuestionIndex + 1;
     const questionCount = this.props.questions.length;
     return(
-      <div data-ui-hook="presentation-mode"
-           className="flex flex--column"
-           onKeyDown={this.handleKeyDown}>
-        <div className="previous-question question-navigator noselect"
-             onClick={ () => { this.questionNavigator(-1) } }>
-          {'<'}
-        </div>
-        <div className="next-question question-navigator noselect"
-             onClick={ () => { this.questionNavigator(1) } }>
-          {'>'}
-        </div>
+      <div className="flex flex--column presentation-mode">
         <div className="navigation-info">
           { currentVisibleQuestion } of { questionCount }
         </div>
-        <div className="progress anchor--middle">
-          <div className="progress__bar" style={{width: (currentVisibleQuestion / questionCount) * 100 + '%'}} aria-valuenow={ (currentVisibleQuestion / questionCount) * 100 } aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <div className="exit noselect" onClick={ this.props.toggleVisibility }>X</div>
         <PresentationModeQuestion
           question={ currentQuestion.question}
           date={ currentQuestion.date }
           author= { currentQuestion.author }
           key= { currentQuestion._id }
         />
+        <div className="progress anchor--middle">
+          <div className="progress__bar" style={{width: (currentVisibleQuestion / questionCount) * 100 + '%'}} aria-valuenow={ (currentVisibleQuestion / questionCount) * 100 } aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>
+    );
+  },
+
+  render() {
+    return(
+      <div onKeyDown={this.handleKeyDown}>
+        <div className="exit noselect" onClick={ this.props.hideComponent }>X</div>
+        { this.props.questions.length ? this.renderQuestions() : this.renderNoQuestions()}
       </div>
     );
   }

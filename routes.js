@@ -9,36 +9,30 @@ const {
   ObjectId,
 } = require('mongodb');
 
-const randomShortId = () => {
-  return 'xxx'.replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  }).toLowerCase();
-};
-
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 router.use('/images/', express.static(path.join(__dirname, '/src/assets/static/img/')));
 
-// main
-router.get('/', function(request, response) {
+/* MAIN */
+
+router.get('/', (request, response) => {
   response.sendFile(__dirname + '/dist/index.html')
 });
 
 /* QUESTIONS */
 
 // get questions
-router.get('/api/v1/questions/:meetingId', function(request, response) {
+router.get('/api/v1/questions/:meetingId', (request, response) => {
   const meetingId = request.params.meetingId;
   const questionQuery = meetingId ? { meeting_id: meetingId, deleted: false } : { deleted: false };
 
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
     const collection = db.collection(modules.enums.collections.QUESTIONS);
-    collection.find(questionQuery).toArray(function(err, result) {
+    collection.find(questionQuery).toArray((err, result) => {
       if (err) {
         return console.error('Unable to get collection', err);
       }
@@ -51,8 +45,8 @@ router.get('/api/v1/questions/:meetingId', function(request, response) {
 });
 
 // create question
-router.post('/api/v1/questions', function(request, response) {
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+router.post('/api/v1/questions', (request, response) => {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
@@ -68,7 +62,7 @@ router.post('/api/v1/questions', function(request, response) {
       deleted: false,
     };
 
-    collection.insert(question, function(err, result) {
+    collection.insert(question, (err, result) => {
       if (err) {
         console.error('Unable to post to collection', err);
         return response.send(err);
@@ -80,8 +74,8 @@ router.post('/api/v1/questions', function(request, response) {
   });
 });
 
-// update questions
-router.put('/api/v1/questions/:questionId/:instruction', function(request, response) {
+// update question
+router.put('/api/v1/questions/:questionId/:instruction', (request, response) => {
   const instruction = request.params.instruction;
   const questionId = request.params.questionId;
   let update = {};
@@ -96,17 +90,19 @@ router.put('/api/v1/questions/:questionId/:instruction', function(request, respo
     case 'delete':
       update = { deleted: true };
       break;
-    case 'undelete':
-      update = { deleted: false };
-      break;
   }
 
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
     const collection = db.collection(modules.enums.collections.QUESTIONS);
-    collection.update({ _id: ObjectId(questionId) }, { $set: update });
+    collection.update({ _id: ObjectId(questionId) }, { $set: update }, (err, result) => {
+      if (err) {
+        console.error('Unable to update question', err);
+        return response.send(err);
+      }
+    });
 
     response.send({status: 'success'});
 
@@ -117,13 +113,13 @@ router.put('/api/v1/questions/:questionId/:instruction', function(request, respo
 /* MEETINGS */
 
 // get meeting
-router.get('/api/v1/meetings', function(request, response) {
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+router.get('/api/v1/meetings', (request, response) => {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
     const collection = db.collection(modules.enums.collections.MEETINGS);
-    collection.find({}).toArray(function(err, result) {
+    collection.find({}).toArray((err, result) => {
       if (err) {
         return console.error('Unable to get collection', err);
       }
@@ -136,8 +132,8 @@ router.get('/api/v1/meetings', function(request, response) {
 });
 
 // create meeting
-router.post('/api/v1/meetings', function(request, response) {
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+router.post('/api/v1/meetings', (request, response) => {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
@@ -153,10 +149,10 @@ router.post('/api/v1/meetings', function(request, response) {
     let counter = 0;
     while(!meeting.short_id && counter < 10000) {
       counter = counter + 1;
-      const shortId = randomShortId();
+      const shortId = modules.fns.shortId();
       const itemLookup = collection.find({short_id: shortId}, {_id: 1}).toArray((err, result) => {
         if(err) {
-          return console.log('There was an error', err);
+          return console.log('There was an error searching for the short_id', err);
         }
         return result[0];
       });
@@ -165,9 +161,9 @@ router.post('/api/v1/meetings', function(request, response) {
       }
     }
 
-    collection.insert(meeting, function(err, result) {
+    collection.insert(meeting, (err, result) => {
       if (err) {
-        console.error('Unable to post to collection', err);
+        console.error('Unable to create meeting', err);
         return response.send(err);
       }
       response.send(result.ops[0]);
@@ -177,9 +173,9 @@ router.post('/api/v1/meetings', function(request, response) {
   });
 });
 
-// create meeting
-router.delete('/api/v1/meetings/:meetingId', function(request, response) {
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, function(err, db) {
+// delete meeting
+router.delete('/api/v1/meetings/:meetingId', (request, response) => {
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
@@ -187,7 +183,7 @@ router.delete('/api/v1/meetings/:meetingId', function(request, response) {
     const collection = db.collection(modules.enums.collections.MEETINGS);
     const meetingId = request.params.meetingId;
 
-    collection.deleteOne({ _id: ObjectId(meetingId) }, function(err, result) {
+    collection.deleteOne({ _id: ObjectId(meetingId) }, (err, result) => {
       if (err) {
         console.error('Unable to delete meeting', err);
         return response.send(err);
@@ -197,6 +193,36 @@ router.delete('/api/v1/meetings/:meetingId', function(request, response) {
 
     db.close();
 
+  });
+});
+
+// archive all questions in meeting
+router.put('/api/v1/meetings/:meetingId/:instruction', (request, response) => {
+  const meetingId = request.params.meetingId;
+  const instruction = request.params.instruction;
+  let update = {};
+
+  switch(instruction) {
+    case 'archive':
+      update = { archived: true };
+      break;
+  }
+
+  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
+    if (err) {
+      return console.error('Unable to connect to the server', err);
+    }
+    const collection = db.collection(modules.enums.collections.QUESTIONS);
+    collection.updateMany({ meeting_id: meetingId }, { $set: update }, (err, result) => {
+      if (err) {
+        console.error('Unable to archive all questions', err);
+        return response.send(err);
+      }
+    });
+
+    response.send({status: 'success'});
+
+    db.close();
   });
 });
 

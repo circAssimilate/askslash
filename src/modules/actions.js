@@ -2,27 +2,26 @@ const $ = require('jquery');
 const enums = require('./enums');
 const fns = require('./fns');
 
-exports.getQuestions = (meeting = {}) => {
-  let url = meeting._id ? `/api/v1/questions/${meeting._id}` : '/api/v1/questions';
+// Database actions
+exports.getQuestions = meetingId => {
   return $.ajax({
-    url: url,
+    url: `/api/v1/questions/${meetingId}`,
     type: 'GET',
   });
 };
 
-exports.postQuestion = (data) => {
+exports.postQuestion = questionData => {
   return $.ajax({
     url: '/api/v1/questions',
     type: 'POST',
     contentType: 'application/json',
-    data: JSON.stringify(data),
+    data: JSON.stringify(questionData),
   });
 };
 
-exports.updateQuestion = (path) => {
-  let url = `/api/v1/questions/${path}`;
+exports.updateQuestion = path => {
   return $.ajax({
-    url: url,
+    url: `/api/v1/questions/${path}`,
     type: 'PUT',
     contentType: 'application/json',
   });
@@ -35,16 +34,16 @@ exports.getMeetings = () => {
   });
 };
 
-exports.createMeeting = (data) => {
+exports.createMeeting = meetingData => {
   return $.ajax({
     url: '/api/v1/meetings',
     type: 'POST',
     contentType: 'application/json',
-    data: JSON.stringify(data),
+    data: JSON.stringify(meetingData),
   });
 };
 
-exports.deleteMeeting = (meetingId) => {
+exports.deleteMeeting = meetingId => {
   return $.ajax({
     url: `/api/v1/meetings/${meetingId}`,
     type: 'DELETE',
@@ -52,6 +51,15 @@ exports.deleteMeeting = (meetingId) => {
   });
 };
 
+exports.archiveMeetingQuestions = path => {
+  return $.ajax({
+    url: `/api/v1/meetings/${path}`,
+    type: 'PUT',
+    contentType: 'application/json',
+  });
+};
+
+// Client storage actions
 exports.getOrCreateUserId = () => {
   const userId = localStorage.getItem('user_id') || localStorage.setItem('user_id', fns.uuidV4());
   return {userId: userId}

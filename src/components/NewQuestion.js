@@ -22,7 +22,7 @@ module.exports = React.createClass({
     return {
       isSubmitDisabled: true,
       isSubmitting: false,
-      keystrokes: [],
+      keystrokes: {},
       form: toImmutable({
         anonymous: false,
         question: '',
@@ -46,14 +46,23 @@ module.exports = React.createClass({
   },
 
   handleKeyDown(event) {
-    // this.setNextState({
-    //   keystroke: this.state.keystroke.push(event.keyCode),
-    // });
-    // if (event.keyCode == 91 && event.keyCode == 13) { // Esc
-    //   this.onSubmit();
-    // }
+    this.setNextState({
+      keystrokes: _.extend(this.state.keystrokes, {
+        [event.keyCode]: event.type == 'keydown',
+      }),
+    });
+
+    if (this.state.keystrokes[13] && this.state.keystrokes[91] && !this.state.formSubmitted && this.state.form.get('question')) { // Command + Enter
+      this.setNextState({formSubmitted: true});
+      this.onSubmit();
+    }
   },
 
+  handleKeyUp(event) {
+    this.setNextState({
+      keystrokes: {},
+    });
+  },
 
   onSubmit() {
     const data = {
@@ -66,6 +75,7 @@ module.exports = React.createClass({
     modules.actions.postQuestion(data)
       .done(response => {
         this.setNextState({
+          formSubmitted: false,
           form: this.state.form
             .set('anonymous', false)
             .set('question', ''),
@@ -76,7 +86,9 @@ module.exports = React.createClass({
 
   render() {
     return(
-      <section className="anchor--middle push-double--ends soft-double" onKeyDown={ this.handleKeyDown }>
+      <section className="anchor--middle push-double--ends soft-double"
+               onKeyDown={ this.handleKeyDown }
+               onKeyUp={ this.handleKeyUp }>
         <div>
           <Textarea
             placeholder="Your question here..."
@@ -95,6 +107,7 @@ module.exports = React.createClass({
               rightGroup={[
                 <Button
                   key="1"
+                  isDisabled={ this.state.isSubmitDisabled }
                   onClick={ this.onSubmit }
                   style="highlight"
                   width="default">

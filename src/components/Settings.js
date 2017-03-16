@@ -15,7 +15,7 @@ const {
 module.exports = React.createClass({
   propTypes: {
     refreshAppData: React.PropTypes.func.isRequired,
-    toggleVisibility: React.PropTypes.func.isRequired,
+    hideComponent: React.PropTypes.func.isRequired,
   },
 
   getInitialState() {
@@ -148,7 +148,7 @@ module.exports = React.createClass({
     return(
        <Dialog
         onSubmit={ this.onSave }
-        hideDialog={ this.props.toggleVisibility }
+        hideDialog={ this.props.hideComponent }
         isSubmitDisabled={ this.state.isSubmitDisabled }
         style="default"
         submitButtonText="Save"

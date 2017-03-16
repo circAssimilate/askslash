@@ -8,14 +8,15 @@ const {
 
 module.exports = React.createClass({
   propTypes: {
-    dialogTitle: React.PropTypes.string.isRequired,
+    cancelButtonText: React.PropTypes.string.isRequired,
     dialogContent: React.PropTypes.func.isRequired,
-    onSubmit: React.PropTypes.func.isRequired,
+    dialogTitle: React.PropTypes.string.isRequired,
+    hideCancelOptions: React.PropTypes.bool.isRequired,
     hideDialog: React.PropTypes.func.isRequired,
     isSubmitDisabled: React.PropTypes.bool.isRequired,
-    submitButtonText: React.PropTypes.string.isRequired,
-    cancelButtonText: React.PropTypes.string.isRequired,
+    onSubmit: React.PropTypes.func.isRequired,
     style: React.PropTypes.string.isRequired,
+    submitButtonText: React.PropTypes.string.isRequired,
   },
 
   getInitialState() {
@@ -42,6 +43,58 @@ module.exports = React.createClass({
     this.props.onSubmit();
   },
 
+  renderButtonRow() {
+    return (
+      <ButtonRow
+        rightGroup={[
+          <Button
+            key="1"
+            style="highlight"
+            width="default"
+            isDisabled={ this.props.isSubmitDisabled }
+            onClick={ this.onSubmit }>
+            { this.props.submitButtonText }
+          </Button>
+        ]}
+      />
+    );
+  },
+
+  renderButtonRowWithCancel() {
+    return (
+      <ButtonRow
+        rightGroup={[
+          <Button
+            key="1"
+            style="plain"
+            width="default"
+            onClick={ this.props.hideDialog }>
+            { this.props.cancelButtonText }
+          </Button>,
+          <Button
+            key="2"
+            style="highlight"
+            width="default"
+            isDisabled={ this.props.isSubmitDisabled }
+            onClick={ this.onSubmit }>
+            { this.props.submitButtonText }
+          </Button>
+        ]}
+      />
+    );
+  },
+
+  renderCloseIcon() {
+    return(
+      <div onClick={ this.props.hideDialog }
+            className="dialog__close">
+        <svg className="icon">
+          <use xlinkHref="#close-16"></use>
+        </svg>
+      </div>
+    );
+  },
+
   render() {
     return (
       <div className="overlay dialog-container" onKeyDown={ this.handleKeyDown }>
@@ -53,32 +106,9 @@ module.exports = React.createClass({
             { this.props.dialogContent() }
           </div>
           <div className="dialog__footer">
-            <ButtonRow
-              rightGroup={[
-                <Button
-                  key="1"
-                  style="plain"
-                  width="default"
-                  onClick={ this.props.hideDialog }>
-                  { this.props.cancelButtonText }
-                </Button>,
-                <Button
-                  key="2"
-                  style="highlight"
-                  width="default"
-                  isDisabled={ this.props.isSubmitDisabled }
-                  onClick={ this.onSubmit }>
-                  { this.props.submitButtonText }
-                </Button>
-              ]}
-            />
+            { this.props.hideCancelOptions ? this.renderButtonRow() : this.renderButtonRowWithCancel() }
           </div>
-          <div onClick={ this.props.hideDialog }
-                className="dialog__close">
-            <svg className="icon">
-              <use xlinkHref="#close-16"></use>
-            </svg>
-          </div>
+          { this.props.hideCancelOptions ? '' : this.renderCloseIcon() }
         </div>
       </div>
     );

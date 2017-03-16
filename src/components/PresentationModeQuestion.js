@@ -10,11 +10,11 @@ module.exports = React.createClass({
 
   render() {
     return(
-      <div data-ui-hook="presentation-mode-question-wrapper" className="flex--1 flex flex--column">
+      <div className="flex--1 flex flex--column presentation-mode-question-wrapper">
         <div dangerouslySetInnerHTML={{__html: modules.fns.sanitizeQuestionAndConvertMarkdownToHtml(this.props.question) }}
-             className="flex--dead-center flex--1">
+             className="flex--dead-center flex--1 weight--light">
         </div>
-        <div className="question-info anchor--middle">
+        <div className="question-info anchor--middle weight--light">
           By <span className="highlight">{ this.props.author }</span> { modules.fns.renderTimeSincePosted(this.props.date) }
         </div>
       </div>

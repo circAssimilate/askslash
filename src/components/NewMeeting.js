@@ -13,8 +13,9 @@ const {
 
 module.exports = React.createClass({
   propTypes: {
+    hideComponent: React.PropTypes.func.isRequired,
+    noMeetings: React.PropTypes.bool.isRequired,
     refreshAppData: React.PropTypes.func.isRequired,
-    toggleVisibility: React.PropTypes.func.isRequired,
   },
 
   getInitialState() {
@@ -46,9 +47,6 @@ module.exports = React.createClass({
   dialogContent() {
     return(
       <form>
-        <div className="form__header">
-          <p>Give us some more details on this meeting.</p>
-        </div>
         <fieldset>
           <ol className="form-fields">
             <li className="form-field__item">
@@ -60,7 +58,7 @@ module.exports = React.createClass({
             </li>
             <li className="form-field__item">
               <label className="oui-label">
-                Meeting Short Name
+                Meeting ID
                 <span className="oui-label__optional">(Optional)</span>
               </label>
               <div className="button-group">
@@ -70,6 +68,7 @@ module.exports = React.createClass({
                   onChange={ _.partialRight(this.setPropertyFromEvent, 'shortId', 'value') }
                   type="text"/>
               </div>
+              <div className="form-note">This short id (8 characters maximum) will be used in integrations and meeting links. A three-digit id will be generated if left blank.</div>
             </li>
           </ol>
         </fieldset>
@@ -87,22 +86,27 @@ module.exports = React.createClass({
     modules.actions.createMeeting(data)
       .done(response => {
         const meetingId = response._id;
-        modules.actions.setMeetingId(meetingId, this.props.refreshAppData);
-        this.props.toggleVisibility();
+
+        modules.actions.setMeetingId(meetingId, () => {
+          this.props.refreshAppData(() => {
+            this.props.hideComponent();
+          });
+        });
       });
   },
 
   render() {
     return(
        <Dialog
-        onSubmit={ this.onSubmit }
-        hideDialog={ this.props.toggleVisibility }
-        isSubmitDisabled={ this.state.isSubmitDisabled }
-        style="default"
-        submitButtonText="Create"
-        cancelButtonText="Cancel"
-        dialogTitle="New Meeting"
-        dialogContent={ this.dialogContent }
+         cancelButtonText="Cancel"
+         dialogContent={ this.dialogContent }
+         dialogTitle="New Meeting"
+         hideDialog={ this.props.hideComponent }
+         hideCancelOptions={ this.props.noMeetings }
+         isSubmitDisabled={ this.state.isSubmitDisabled }
+         onSubmit={ this.onSubmit }
+         style="default"
+         submitButtonText="Create"
       />
     )
   },

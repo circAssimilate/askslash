@@ -6,7 +6,11 @@ $highlight-primary-color: #ADE7FF;
 $highlight-secondary-color: #0081BA;
 $max-width: 750px;
 $min-width: 400px;
-$dialog-container-z-index: 1000;
+
+// z-indexes
+$presentation-mode-z-index: 1001;
+$nav-bar-z-index: 1002;
+$dialog-container-z-index: 1003;
 
 html {
   background: url('/images/bg.svg') no-repeat 45% 0 $background-primary-color;
@@ -16,29 +20,16 @@ html {
   max-width: $max-width;
 }
 
+nav {
+  position: relative;
+  z-index: $nav-bar-z-index;
+}
+
 section {
   background-color: $section-background-color;
   max-width: $max-width;
   min-width: $min-width;
   border-radius: 5px;
-}
-
-.aligner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.aligner-item {
-  max-width: 50%;
-}
-
-.aligner-item--top {
-  align-self: flex-start;
-}
-
-.aligner-item--bottom {
-  align-self: flex-end;
 }
 
 footer a:link, footer a:visited {
@@ -52,7 +43,7 @@ footer a:link, footer a:visited {
 }
 
 .question-info {
-  font-size: 10px;
+  font-size: 11px;
   text-align: right;
 }
 
@@ -74,51 +65,58 @@ footer a:link, footer a:visited {
   color: $highlight-secondary-color;
 }
 
-[data-ui-hook="presentation-mode"] {
+.presentation-mode {
+  z-index: $presentation-mode-z-index;
   position: absolute;
   top: 0;
   left: 0;
-  font-size: 30px;
+  font-size: 26px;
   background: url('/static/img/bg.svg') no-repeat 0 30% $background-primary-color;
   color: $text-primary-color;
   height: 100%;
   width: 100%;
 }
 
-[data-ui-hook="presentation-mode"] strong {
+.presentation-mode strong {
   font-weight: 500;
 }
 
-[data-ui-hook="presentation-mode"] a:link,
-[data-ui-hook="presentation-mode"] a:hover,
-[data-ui-hook="presentation-mode"] a:visited,
-[data-ui-hook="presentation-mode"] a:active {
+.presentation-mode a:link,
+.presentation-mode a:hover,
+.presentation-mode a:visited,
+.presentation-mode a:active {
   color: $highlight-primary-color;
 }
 
-[data-ui-hook="presentation-mode"] .highlight {
+.presentation-mode .highlight {
   color: $highlight-primary-color;
 }
 
-[data-ui-hook="presentation-mode-question-wrapper"] {
-  padding: 15% 10%;
+.presentation-mode-question-wrapper {
+  padding: 8% 10% 10% 10%;
   background-color: rgba(0, 71, 102, 0.4);
 }
 
-[data-ui-hook="presentation-mode"] .navigation-info {
+.presentation-mode .navigation-info {
   position: absolute;
   font-size: 10px;
   left: 10px;
   top: 8px;
 }
 
-[data-ui-hook="presentation-mode"] p:before {
+.presentation-mode p:before {
   color: #ffffff;
   content: open-quote;
-  margin-right: 0.25em;
+  margin-right: 0.15em;
 }
 
-[data-ui-hook="presentation-mode"] p {
+.presentation-mode p:after {
+  color: #ffffff;
+  content: close-quote;
+  margin-left: 0.15em;
+}
+
+.presentation-mode p {
   margin-bottom: 0; // This is needed for the auto-generated markdown translation paragraph element
   display: inline-block;
 }
@@ -143,10 +141,11 @@ footer a:link, footer a:visited {
 }
 
 .progress {
-  width: 80%;
+  width: 100%;
   height: 5px;
-  position: relative;
-  top: 14px;
+  position: absolute;
+  bottom: 0;
+  border-radius: 0;
 }
 
 .question-cta {
