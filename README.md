@@ -8,7 +8,9 @@ An open source application for moderating questions. Built with React v15 and Ba
 After updating Homebrew `brew install mongodb`
 After downloading Mongo, create the “db” directory. This is where the Mongo data files will live. You can create the directory in the default location by running `mkdir -p /data/db`
 Make sure that the /data/db directory has the right permissions by running
-```sudo chown -R `id -un` /data/db
+
+```
+sudo chown -R `id -un` /data/db
 # Enter your password
 ```
 * Run the Mongo daemon, in one of your terminal windows run `mongod`. This should start the Mongo server.
