@@ -1,26 +1,34 @@
-require('./assets/stylesheets/base.scss');
-require('./assets/stylesheets/styles.scss');
+import { connect } from 'react-redux'
+import axios from 'axios'
+import _ from 'lodash'
+import $ from 'jquery'
+import ouiIcons from 'oui-icons'
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-const _ = require('lodash');
-const $ = require('jquery');
-const modules = require('./modules');
-const ouiIcons = require('oui-icons');
-const React = require('react');
-const ReactDOM = require('react-dom');
+import Nav from './nav'
+import QuestionCreator from './question_creator'
+import ListMode from './list_mode'
+const PresentationMode = require('./presentation_mode');
 
-const Footer = require('./components/Footer');
-const Nav = require('./components/Nav');
-const NewQuestion = require('./components/NewQuestion');
-const Questions = require('./components/Questions');
+import questionsModule from 'app/modules/questions'
+import { ButtonRow, Button } from 'optimizely-oui'
 
-const {
-  ButtonRow,
-  Button,
-} = require('optimizely-oui');
+import 'assets/stylesheets/base.scss'
+import 'assets/stylesheets/styles.scss'
 
-const App = React.createClass({
-  getInitialState() {
-    return {
+class Ask extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.togglePresentationMode = this.togglePresentationMode.bind(this);
+    this.toggleSettingsView = this.toggleSettingsView.bind(this);
+    this.toggleShowArchived = this.toggleShowArchived.bind(this);
+    this.toggleShowButtons = this.toggleShowButtons.bind(this);
+    this.setNextState = this.setNextState.bind(this);
+    this.refreshAppData = this.refreshAppData.bind(this);
+
+    this.state = {
       userId: null,
       isLoading: true,
       questions: [],
@@ -31,40 +39,40 @@ const App = React.createClass({
       showArchived: false,
       showButtons: false,
     };
-  },
+  }
 
   togglePresentationMode() {
     this.setNextState({presentationModeIsVisible: !this.state.presentationModeIsVisible});
-  },
+  }
 
   toggleSettingsView() {
     this.setNextState({settingsIsVisible: !this.state.settingsIsVisible});
-  },
+  }
 
   toggleShowArchived() {
     this.setNextState({showArchived: !this.state.showArchived});
-  },
+  }
 
   toggleShowButtons() {
     this.setNextState({showButtons: !this.state.showButtons});
-  },
+  }
 
   setNextState(nextState) {
     this.setState(nextState, () => {
 
     });
-  },
+  }
 
   refreshAppData(callback = () => {}) {
-    modules.actions.getMeetings()
+    questionsModule.actions.getMeetings()
       .done(response => {
-        const selectedMeeting = _.find(response.meetings, ['_id', modules.actions.getMeetingId()]);
+        const selectedMeeting = _.find(response.meetings, ['_id', questionsModule.actions.getMeetingId()]);
         this.setNextState({
           meetings: response.meetings,
           selectedMeeting: selectedMeeting || response.meetings[0] || {},
         });
         if (response.meetings.length) {
-          modules.actions.getQuestions(this.state.selectedMeeting._id)
+          questionsModule.actions.getQuestions(this.state.selectedMeeting._id)
             .done(response => {
               this.setNextState({
                 isLoading: false,
@@ -82,12 +90,12 @@ const App = React.createClass({
       .fail(err => {
         console.log('There was an error retrieving meetings', err);
       });
-  },
+  }
 
   componentWillMount() {
-    this.setNextState({userId: modules.actions.getOrCreateUserId()});
+    this.setNextState({userId: questionsModule.actions.getOrCreateUserId()});
     this.refreshAppData();
-  },
+  }
 
   render() {
     return (
@@ -104,24 +112,20 @@ const App = React.createClass({
           toggleShowArchived={ this.toggleShowArchived }
           toggleShowButtons={ this.toggleShowButtons }
         />
-        <NewQuestion
-          refreshAppData={ this.refreshAppData }
-          selectedMeeting={ this.state.selectedMeeting }
-        />
-        <Questions
+        <ListMode
           isLoading={ this.state.isLoading }
           questions={ this.state.questions }
           refreshAppData={ this.refreshAppData }
           showArchived={ this.state.showArchived }
           showButtons={ this.state.showButtons }
         />
-        <Footer />
+        <PresentationMode
+          questions={ _.filter(this.props.questions, ['archived', false]) }
+          hideComponent={ () => { this.toggleSubMenuVisibility('presentationMode', false) } }
+        />
       </div>
     );
-  },
-});
+  }
+};
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('root')
-);
+export default Ask

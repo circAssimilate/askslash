@@ -1,29 +1,29 @@
 const React = require('react');
-const modules = require('../modules');
+
+const questionsModule = require('app/modules/questions');
 
 const {
   ButtonRow,
   Button,
 } = require('optimizely-oui');
 
-module.exports = React.createClass({
-  propTypes: {
-    archiveQuestion: React.PropTypes.func.isRequired,
-    deleteQuestion: React.PropTypes.func.isRequired,
-    question: React.PropTypes.object.isRequired,
-    showButtons: React.PropTypes.bool.isRequired,
-    unarchiveQuestion: React.PropTypes.func.isRequired,
-  },
+class Question extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.renderInfoRow = this.renderInfoRow.bind(this);
+    this.renderInfoRowWithButtons = this.renderInfoRowWithButtons.bind(this);
+  }
 
   renderInfoRow() {
     return(
       <div
         className="display--inline-block push--right"
         key="1">
-        By <span className="highlight">{ this.props.question.author }</span> { modules.fns.renderTimeSincePosted(this.props.question.date) } via { this.props.question.channel }
+        By <span className="highlight">{ this.props.question.author }</span> { questionsModule.fns.renderTimeSincePosted(this.props.question.date) } via { this.props.question.channel }
       </div>
     );
-  },
+  }
 
   renderInfoRowWithButtons() {
     return(
@@ -32,7 +32,7 @@ module.exports = React.createClass({
           <div
             className="display--inline-block push--right"
             key="1">
-            By <span className="highlight">{ this.props.question.author }</span> { modules.fns.renderTimeSincePosted(this.props.question.date) } via { this.props.question.channel }
+            By <span className="highlight">{ this.props.question.author }</span> { questionsModule.fns.renderTimeSincePosted(this.props.question.date) } via { this.props.question.channel }
           </div>,
           <Button
             key="2"
@@ -57,16 +57,26 @@ module.exports = React.createClass({
         ]}
        />
     );
-  },
+  }
 
   render() {
     return(
       <li className={ this.props.question.archived ? "push--ends question faded" : "push--ends question"}>
-        <div dangerouslySetInnerHTML={{__html: modules.fns.sanitizeQuestionAndConvertMarkdownToHtml(this.props.question.question) }}></div>
+        <div dangerouslySetInnerHTML={{__html: questionsModule.fns.sanitizeQuestionAndConvertMarkdownToHtml(this.props.question.question) }}></div>
         <div className="question-info push-double--top">
           { this.props.showButtons ? this.renderInfoRowWithButtons() : this.renderInfoRow() }
         </div>
       </li>
     );
   }
-});
+};
+
+Question.propTypes = {
+  archiveQuestion: React.PropTypes.func.isRequired,
+  deleteQuestion: React.PropTypes.func.isRequired,
+  question: React.PropTypes.object.isRequired,
+  showButtons: React.PropTypes.bool.isRequired,
+  unarchiveQuestion: React.PropTypes.func.isRequired,
+};
+
+export default Question

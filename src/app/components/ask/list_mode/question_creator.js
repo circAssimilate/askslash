@@ -3,7 +3,7 @@ const $ = require('jquery');
 const React = require('react');
 const { Immutable, toImmutable } = require('nuclear-js');
 
-const modules = require('../modules');
+const questionsModule = require('app/modules/questions');
 
 const {
   ButtonRow,
@@ -12,14 +12,17 @@ const {
   Textarea,
 } = require('optimizely-oui');
 
-module.exports = React.createClass({
-  propTypes: {
-    refreshAppData: React.PropTypes.func.isRequired,
-    selectedMeeting: React.PropTypes.object.isRequired,
-  },
+class QuestionCreator extends React.Component {
+  constructor(props) {
+    super(props);
 
-  getInitialState() {
-    return {
+    this.setPropertyFromEvent = this.setPropertyFromEvent.bind(this);
+    this.setNextState = this.setNextState.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleKeyUp = this.handleKeyUp.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+
+    this.state = {
       isSubmitDisabled: true,
       isSubmitting: false,
       keystrokes: {},
@@ -28,14 +31,14 @@ module.exports = React.createClass({
         question: '',
       }),
     };
-  },
+  }
 
   setPropertyFromEvent(event, property, value, shouldNegate = false) {
     const valueToSet = shouldNegate ? !event.target[value] : event.target[value];
     this.setNextState({
       form: this.state.form.set(property, valueToSet),
     });
-  },
+  }
 
   setNextState(nextState) {
     this.setState(nextState, () => {
@@ -43,7 +46,7 @@ module.exports = React.createClass({
         isSubmitDisabled: !this.state.form.get('question'),
       });
     });
-  },
+  }
 
   handleKeyDown(event) {
     this.setNextState({
@@ -56,23 +59,23 @@ module.exports = React.createClass({
       this.setNextState({formSubmitted: true});
       this.onSubmit();
     }
-  },
+  }
 
   handleKeyUp(event) {
     this.setNextState({
       keystrokes: {},
     });
-  },
+  }
 
   onSubmit() {
     const data = {
       author: this.state.form.get('anonymous') ? 'Anonymous' : 'derek@optimizely.com',
-      channel: modules.enums.channel.WEB,
+      channel: questionsModule.enums.channel.WEB,
       date : new Date(),
       meeting_id: this.props.selectedMeeting._id,
       question: this.state.form.get('question'),
     };
-    modules.actions.postQuestion(data)
+    questionsModule.actions.postQuestion(data)
       .done(response => {
         this.setNextState({
           formSubmitted: false,
@@ -82,7 +85,7 @@ module.exports = React.createClass({
         });
         this.props.refreshAppData();
       });
-  },
+  }
 
   render() {
     return(
@@ -119,5 +122,12 @@ module.exports = React.createClass({
         </div>
       </section>
     );
-  },
-});
+  }
+};
+
+QuestionCreator.propTypes = {
+  refreshAppData: React.PropTypes.func.isRequired,
+  selectedMeeting: React.PropTypes.object.isRequired,
+};
+
+export default QuestionCreator

@@ -1,13 +1,11 @@
 const _ = require('lodash');
 const $ = require('jquery');
-const modules = require('../modules');
+const questionsModule = require('app/modules/questions');
 const React = require('react');
 const { Immutable, toImmutable } = require('nuclear-js');
 
-const NewMeeting = require('./NewMeeting');
-const MeetingCta = require('./MeetingCta');
-const PresentationMode = require('./PresentationMode');
-const Settings = require('./Settings');
+const MeetingCreator = require('./meeting_creator');
+const Settings = require('./settings');
 
 const phoneNumber = '6144-OPTIFY (614-467-8439)';
 const slackShortcut = '/ask';
@@ -17,54 +15,55 @@ const {
   ArrowsInline,
 } = require('optimizely-oui');
 
-module.exports = React.createClass({
-  propTypes: {
-    archivedVisible: React.PropTypes.bool.isRequired,
-    buttonsVisible: React.PropTypes.bool.isRequired,
-    isLoading: React.PropTypes.bool.isRequired,
-    meetings: React.PropTypes.array.isRequired,
-    questions: React.PropTypes.array.isRequired,
-    refreshAppData: React.PropTypes.func.isRequired,
-    selectedMeeting: React.PropTypes.object.isRequired,
-    toggleShowArchived: React.PropTypes.func.isRequired,
-    toggleShowButtons: React.PropTypes.func.isRequired,
-  },
+class Nav extends React.Component {
+  constructor(props) {
+    super(props);
 
-  getInitialState() {
-    return {
+    this.setNextState = this.setNextState.bind(this);
+    this.toggleSubMenuVisibility = this.toggleSubMenuVisibility.bind(this);
+    this.handleClick = this.handleClick.bind(this);
+    this.changeMeeting = this.changeMeeting.bind(this);
+    this.deleteMeeting = this.deleteMeeting.bind(this);
+    this.archiveMeetingQuestions = this.archiveMeetingQuestions.bind(this);
+    this.toggleMenuVisibility = this.toggleMenuVisibility.bind(this);
+    this.renderNewMeetingDialog = this.renderNewMeetingDialog.bind(this);
+    this.renderPresentationMode = this.renderPresentationMode.bind(this);
+    this.renderSettingsDialog = this.renderSettingsDialog.bind(this);
+
+    this.state = {
       menuOpen: false,
       keystrokes: {},
       subMenuVisible: toImmutable({
-        newMeeting: false,
+        meetingCreator: false,
         presentationMode: false,
         settings: false,
       }),
     };
-  },
+  }
 
   setNextState(nextState) {
     this.setState(nextState, () => {
 
     });
-  },
+  }
 
   toggleSubMenuVisibility(property, open = true) {
     this.setNextState({
       subMenuVisible: this.state.subMenuVisible.set(property, open),
     });
-  },
+  }
 
   componentDidMount: function() {
     $(document.body).on('keydown', this.handleKeyDown);
     $(document.body).on('click', this.handleClick);
     $(document.body).on('keyup', this.handleKeyUp);
-  },
+  }
 
   componentWillUnmount: function() {
     $(document.body).off('keydown', this.handleKeyDown);
     $(document.body).off('click', this.handleClick);
     $(document.body).off('keyup', this.handleKeyUp);
-  },
+  }
 
   handleClick(event) {
     if(!$(event.target).closest('[data-ui-hook="current-meeting"]').length) {
@@ -72,7 +71,7 @@ module.exports = React.createClass({
         this.setNextState({menuOpen: false});
       }
     }
-  },
+  }
 
   handleKeyDown(event) {
     this.setNextState({
@@ -96,57 +95,46 @@ module.exports = React.createClass({
         }
       }
     }
-  },
+  }
 
   handleKeyUp(event) {
     this.setNextState({
       keystrokes: {},
     });
-  },
+  }
 
   changeMeeting(meetingId) {
-    modules.actions.setMeetingId(meetingId, this.props.refreshAppData);
-  },
+    questionsModule.actions.setMeetingId(meetingId, this.props.refreshAppData);
+  }
 
   deleteMeeting() {
-    modules.actions.deleteMeeting(this.props.selectedMeeting._id)
+    questionsModule.actions.deleteMeeting(this.props.selectedMeeting._id)
       .done(response => {
         this.props.refreshAppData();
       });
-  },
+  }
 
   archiveMeetingQuestions() {
     const path = `${this.props.selectedMeeting._id}/archive`;
-    modules.actions.archiveMeetingQuestions(path)
+    questionsModule.actions.archiveMeetingQuestions(path)
       .done(response => {
         this.props.refreshAppData();
       });
-  },
+  }
 
   toggleMenuVisibility() {
     this.setNextState({menuOpen: !this.state.menuOpen});
-  },
-
-  renderMeetingCta() {
-    return(
-      <MeetingCta
-        meetingShortId={ this.props.selectedMeeting.short_id }
-        phoneNumber={ phoneNumber }
-        slackShortcut={ slackShortcut }
-        ctaIntervalInSeconds= { ctaIntervalInSeconds }
-      />
-    );
-  },
+  }
 
   renderNewMeetingDialog() {
     return(
-      <NewMeeting
+      <MeetingCreator
         refreshAppData={ this.props.refreshAppData }
-        hideComponent={ () => { this.toggleSubMenuVisibility('newMeeting', false) } }
+        hideComponent={ () => { this.toggleSubMenuVisibility('meetingCreator', false) } }
         noMeetings={ this.props.meetings.length === 0 }
       />
     );
-  },
+  }
 
   renderPresentationMode() {
     return(
@@ -155,7 +143,7 @@ module.exports = React.createClass({
         hideComponent={ () => { this.toggleSubMenuVisibility('presentationMode', false) } }
       />
     );
-  },
+  }
 
   renderSettingsDialog() {
     return(
@@ -164,12 +152,12 @@ module.exports = React.createClass({
         hideComponent={ () => { this.toggleSubMenuVisibility('settings', false) } }
       />
     );
-  },
+  }
 
   render() {
     return(
       <div onClick={ this.handleClick }>
-        { !this.props.isLoading && (this.props.meetings.length === 0 || this.state.subMenuVisible.get('newMeeting')) ? this.renderNewMeetingDialog() : '' }
+        { !this.props.isLoading && (this.props.meetings.length === 0 || this.state.subMenuVisible.get('meetingCreator')) ? this.renderNewMeetingDialog() : '' }
         { this.state.subMenuVisible.get('presentationMode') ? this.renderPresentationMode() : '' }
         { this.state.subMenuVisible.get('settings') ? this.renderSettingsDialog() : '' }
         <nav className="reverse text--center">
@@ -227,7 +215,7 @@ module.exports = React.createClass({
                   { this.props.buttonsVisible ? 'Hide' : 'Show' } Buttons
                 </a>
                 <a className="dropdown__block-link"
-                   onClick={ () => { this.toggleSubMenuVisibility('newMeeting') } }>
+                   onClick={ () => { this.toggleSubMenuVisibility('meetingCreator') } }>
                   Create Meeting
                 </a>
                 <a className="dropdown__block-link"
@@ -267,9 +255,22 @@ module.exports = React.createClass({
               </li>
             </ul>
           </div>
-          { _.isEmpty(this.props.selectedMeeting) ? '' : this.renderMeetingCta() }
         </nav>
       </div>
     );
   }
-});
+};
+
+Nav.propTypes = {
+  archivedVisible: React.PropTypes.bool.isRequired,
+  buttonsVisible: React.PropTypes.bool.isRequired,
+  isLoading: React.PropTypes.bool.isRequired,
+  meetings: React.PropTypes.array.isRequired,
+  questions: React.PropTypes.array.isRequired,
+  refreshAppData: React.PropTypes.func.isRequired,
+  selectedMeeting: React.PropTypes.object.isRequired,
+  toggleShowArchived: React.PropTypes.func.isRequired,
+  toggleShowButtons: React.PropTypes.func.isRequired,
+};
+
+export default Nav

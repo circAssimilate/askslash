@@ -2,24 +2,25 @@ const _ = require('lodash');
 const React = require('react');
 const { Immutable, toImmutable } = require('nuclear-js');
 
-const Dialog = require('../ui_components/Dialog');
+const Dialog = require('app/components/ui/Dialog');
 
-const modules = require('../modules');
+const questionsModule = require('app/modules/questions');
 
 const {
   Button,
   Input,
 } = require('optimizely-oui');
 
-module.exports = React.createClass({
-  propTypes: {
-    hideComponent: React.PropTypes.func.isRequired,
-    noMeetings: React.PropTypes.bool.isRequired,
-    refreshAppData: React.PropTypes.func.isRequired,
-  },
+class MeetingCreator extends React.Component {
+  constructor(props) {
+    super(props);
 
-  getInitialState() {
-    return {
+    this.setPropertyFromEvent = this.setPropertyFromEvent.bind(this);
+    this.setNextState = this.setNextState.bind(this);
+    this.dialogContent = this.dialogContent.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+
+    this.state = {
       isSubmitDisabled: true,
       isSubmitting: false,
       form: toImmutable({
@@ -27,14 +28,14 @@ module.exports = React.createClass({
         shortId: '',
       }),
     };
-  },
+  }
 
   setPropertyFromEvent(event, property, value, shouldNegate = false) {
     const valueToSet = shouldNegate ? !event.target[value] : event.target[value];
     this.setNextState({
       form: this.state.form.set(property, valueToSet),
     });
-  },
+  }
 
   setNextState(nextState) {
     this.setState(nextState, () => {
@@ -42,7 +43,7 @@ module.exports = React.createClass({
         isSubmitDisabled: !this.state.form.get('name'),
       });
     });
-  },
+  }
 
   dialogContent() {
     return(
@@ -74,7 +75,7 @@ module.exports = React.createClass({
         </fieldset>
       </form>
     );
-  },
+  }
 
   onSubmit() {
     const data = {
@@ -83,17 +84,17 @@ module.exports = React.createClass({
       short_id: this.state.form.get('shortId'),
       date: new Date(),
     };
-    modules.actions.createMeeting(data)
+    questionsModule.actions.createMeeting(data)
       .done(response => {
         const meetingId = response._id;
 
-        modules.actions.setMeetingId(meetingId, () => {
+        questionsModule.actions.setMeetingId(meetingId, () => {
           this.props.refreshAppData(() => {
             this.props.hideComponent();
           });
         });
       });
-  },
+  }
 
   render() {
     return(
@@ -109,5 +110,13 @@ module.exports = React.createClass({
          submitButtonText="Create"
       />
     )
-  },
-});
+  }
+};
+
+MeetingCreator.propTypes = {
+  hideComponent: React.PropTypes.func.isRequired,
+  noMeetings: React.PropTypes.bool.isRequired,
+  refreshAppData: React.PropTypes.func.isRequired,
+};
+
+export default MeetingCreator

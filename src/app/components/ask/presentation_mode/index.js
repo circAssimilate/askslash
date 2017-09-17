@@ -2,27 +2,28 @@ const _ = require('lodash');
 const $ = require('jquery');
 const React = require('react');
 
-const PresentationModeQuestion = require('./PresentationModeQuestion');
+const Question = require('./question');
 
-module.exports = React.createClass({
-  propTypes: {
-    hideComponent: React.PropTypes.func.isRequired,
-    questions: React.PropTypes.array.isRequired,
-  },
+class PresentationMode extends React.Component {
+  constructor(props) {
+    super(props);
 
-  getInitialState() {
-    return {
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.questionNavigator = this.questionNavigator.bind(this);
+    this.renderNoQuestions = this.renderNoQuestions.bind(this);
+
+    this.state = {
       currentQuestionIndex: 0,
     };
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     $(document.body).on('keydown', this.handleKeyDown);
-  },
+  }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     $(document.body).off('keydown', this.handleKeyDown);
-  },
+  }
 
   handleKeyDown(event) {
     if (event.keyCode == 37) { // Left Arrow
@@ -31,7 +32,7 @@ module.exports = React.createClass({
     if (event.keyCode == 39 || event.keyCode == 13 || event.keyCode == 32) { // Right Arrow, Enter, Spacebar
       this.questionNavigator(1);
     }
-  },
+  }
 
   questionNavigator(change) {
     const questionCount = this.props.questions.length;
@@ -48,7 +49,7 @@ module.exports = React.createClass({
     return this.setState({
       currentQuestionIndex: questionUp,
     });
-  },
+  }
 
   renderNoQuestions() {
     return(
@@ -60,7 +61,7 @@ module.exports = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
   renderQuestions() {
     const currentQuestion = this.props.questions[this.state.currentQuestionIndex];
@@ -71,7 +72,7 @@ module.exports = React.createClass({
         <div className="navigation-info">
           { currentVisibleQuestion } of { questionCount }
         </div>
-        <PresentationModeQuestion
+        <Question
           question={ currentQuestion.question}
           date={ currentQuestion.date }
           author= { currentQuestion.author }
@@ -82,7 +83,7 @@ module.exports = React.createClass({
         </div>
       </div>
     );
-  },
+  }
 
   render() {
     return(
@@ -92,4 +93,11 @@ module.exports = React.createClass({
       </div>
     );
   }
-});
+};
+
+PresentationMode.propTypes = {
+  hideComponent: React.PropTypes.func.isRequired,
+  questions: React.PropTypes.array.isRequired,
+};
+
+export default PresentationMode

@@ -2,9 +2,9 @@ const _ = require('lodash');
 const React = require('react');
 const { Immutable, toImmutable } = require('nuclear-js');
 
-const Dialog = require('../ui_components/Dialog');
+const Dialog = require('app/components/ui/Dialog');
 
-const modules = require('../modules');
+const questionsModule = require('app/modules/questions');
 
 const {
   Checkbox,
@@ -12,14 +12,16 @@ const {
   Radio,
 } = require('optimizely-oui');
 
-module.exports = React.createClass({
-  propTypes: {
-    refreshAppData: React.PropTypes.func.isRequired,
-    hideComponent: React.PropTypes.func.isRequired,
-  },
+class Settings extends React.Component {
+  constructor(props) {
+    super(props);
 
-  getInitialState() {
-    return {
+    this.setPropertyFromEvent = this.setPropertyFromEvent.bind(this);
+    this.setNextState = this.setNextState.bind(this);
+    this.dialogContent = this.dialogContent.bind(this);
+    this.onSave = this.onSave.bind(this);
+
+    this.state = {
       isSubmitDisabled: false,
       isSubmitting: false,
       form: toImmutable({
@@ -27,14 +29,14 @@ module.exports = React.createClass({
         shortName: '',
       }),
     };
-  },
+  }
 
   setPropertyFromEvent(event, property, value, shouldNegate = false) {
     const valueToSet = shouldNegate ? !event.target[value] : event.target[value];
     this.setNextState({
       form: this.state.form.set(property, valueToSet),
     });
-  },
+  }
 
   setNextState(nextState) {
     this.setState(nextState, () => {
@@ -42,7 +44,7 @@ module.exports = React.createClass({
         isSubmitDisabled: !this.state.form.get('name'),
       });
     });
-  },
+  }
 
   dialogContent() {
     return(
@@ -138,11 +140,11 @@ module.exports = React.createClass({
         </fieldset>
       </form>
     );
-  },
+  }
 
   onSave() {
     console.log('Save Settings');
-  },
+  }
 
   render() {
     return(
@@ -157,5 +159,12 @@ module.exports = React.createClass({
         dialogContent={ this.dialogContent }
       />
     )
-  },
-});
+  }
+};
+
+Settings.propTypes = {
+  refreshAppData: React.PropTypes.func.isRequired,
+  hideComponent: React.PropTypes.func.isRequired,
+};
+
+export default Settings

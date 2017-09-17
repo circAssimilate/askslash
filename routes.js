@@ -1,6 +1,6 @@
 const bodyParser = require('body-parser');
 const express = require('express');
-const modules = require('./src/modules');
+const questionsModule = require('./src/app/modules/questions');
 const path = require('path');
 const router = express.Router();
 
@@ -12,11 +12,11 @@ const {
 router.use(bodyParser.json()); // support json encoded bodies
 router.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-router.use('/images/', express.static(path.join(__dirname, '/src/assets/static/img/')));
+router.use('/assets/', express.static(path.join(__dirname, '/src/assets/')));
 
 /* MAIN */
 
-router.get('/', (request, response) => {
+router.get('/ask', (request, response) => {
   response.sendFile(__dirname + '/dist/index.html')
 });
 
@@ -27,11 +27,11 @@ router.get('/api/v1/questions/:meetingId', (request, response) => {
   const meetingId = request.params.meetingId;
   const questionQuery = meetingId ? { meeting_id: meetingId, deleted: false } : { deleted: false };
 
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
+  MongoClient.connect(questionsModule.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
-    const collection = db.collection(modules.enums.collections.QUESTIONS);
+    const collection = db.collection(questionsModule.enums.collections.QUESTIONS);
     collection.find(questionQuery).toArray((err, result) => {
       if (err) {
         return console.error('Unable to get collection', err);
@@ -46,11 +46,11 @@ router.get('/api/v1/questions/:meetingId', (request, response) => {
 
 // create question
 router.post('/api/v1/questions', (request, response) => {
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
+  MongoClient.connect(questionsModule.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
-    const collection = db.collection(modules.enums.collections.QUESTIONS);
+    const collection = db.collection(questionsModule.enums.collections.QUESTIONS);
 
     const question = {
       author: request.body.author,
@@ -92,11 +92,11 @@ router.put('/api/v1/questions/:questionId/:instruction', (request, response) => 
       break;
   }
 
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
+  MongoClient.connect(questionsModule.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
-    const collection = db.collection(modules.enums.collections.QUESTIONS);
+    const collection = db.collection(questionsModule.enums.collections.QUESTIONS);
     collection.update({ _id: ObjectId(questionId) }, { $set: update }, (err, result) => {
       if (err) {
         console.error('Unable to update question', err);
@@ -114,11 +114,11 @@ router.put('/api/v1/questions/:questionId/:instruction', (request, response) => 
 
 // get meeting
 router.get('/api/v1/meetings', (request, response) => {
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
+  MongoClient.connect(questionsModule.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
-    const collection = db.collection(modules.enums.collections.MEETINGS);
+    const collection = db.collection(questionsModule.enums.collections.MEETINGS);
     collection.find({}).toArray((err, result) => {
       if (err) {
         return console.error('Unable to get collection', err);
@@ -133,11 +133,11 @@ router.get('/api/v1/meetings', (request, response) => {
 
 // create meeting
 router.post('/api/v1/meetings', (request, response) => {
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
+  MongoClient.connect(questionsModule.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
-    const collection = db.collection(modules.enums.collections.MEETINGS);
+    const collection = db.collection(questionsModule.enums.collections.MEETINGS);
 
     const meeting = {
       creator: request.body.creator,
@@ -149,7 +149,7 @@ router.post('/api/v1/meetings', (request, response) => {
     let counter = 0;
     while(!meeting.short_id && counter < 10000) {
       counter = counter + 1;
-      const shortId = modules.fns.shortId();
+      const shortId = questionsModule.fns.shortId();
       const itemLookup = collection.find({short_id: shortId}, {_id: 1}).toArray((err, result) => {
         if(err) {
           return console.log('There was an error searching for the short_id', err);
@@ -175,12 +175,12 @@ router.post('/api/v1/meetings', (request, response) => {
 
 // delete meeting
 router.delete('/api/v1/meetings/:meetingId', (request, response) => {
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
+  MongoClient.connect(questionsModule.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
 
-    const collection = db.collection(modules.enums.collections.MEETINGS);
+    const collection = db.collection(questionsModule.enums.collections.MEETINGS);
     const meetingId = request.params.meetingId;
 
     collection.deleteOne({ _id: ObjectId(meetingId) }, (err, result) => {
@@ -192,7 +192,6 @@ router.delete('/api/v1/meetings/:meetingId', (request, response) => {
     });
 
     db.close();
-
   });
 });
 
@@ -208,11 +207,11 @@ router.put('/api/v1/meetings/:meetingId/:instruction', (request, response) => {
       break;
   }
 
-  MongoClient.connect(modules.enums.settings.MONGO_URL.DEV, (err, db) => {
+  MongoClient.connect(questionsModule.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
       return console.error('Unable to connect to the server', err);
     }
-    const collection = db.collection(modules.enums.collections.QUESTIONS);
+    const collection = db.collection(questionsModule.enums.collections.QUESTIONS);
     collection.updateMany({ meeting_id: meetingId }, { $set: update }, (err, result) => {
       if (err) {
         console.error('Unable to archive all questions', err);

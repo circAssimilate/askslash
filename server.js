@@ -1,3 +1,4 @@
+const subdomain = require('express-subdomain');
 const express = require('express');
 const app = express();
 const router = require('./routes');
@@ -22,12 +23,12 @@ if(process.env.NODE_ENV !== 'production') {
   const webpack = require('webpack');
   const config = require('./webpack.config');
   const compiler = webpack(config);
-  
+
   app.use(webpackDevMiddleware(compiler, { noInfo: true, publicPath: config.output.publicPath }));
   app.use(webpackHotMiddleware(compiler));
 }
 
-app.use('/', router);
+subdomain('api', app.use('/', router));
 
 app.listen(PORT, function(err) {
   if (err) {

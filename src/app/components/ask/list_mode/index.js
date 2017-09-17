@@ -1,48 +1,51 @@
 const _ = require('lodash');
 const React = require('react');
 
-const modules = require('../modules');
+const questionsModule = require('app/modules/questions');
 
-const Question = require('./Question');
+const Question = require('./question');
 
-module.exports = React.createClass({
-  propTypes: {
-    isLoading: React.PropTypes.bool.isRequired,
-    questions: React.PropTypes.array.isRequired,
-    showArchived: React.PropTypes.bool.isRequired,
-    showButtons: React.PropTypes.bool.isRequired,
-    refreshAppData: React.PropTypes.func.isRequired,
-  },
+class ListMode extends React.Component {
+  constructor(props) {
+    super(props);
 
-  getInitialState() {
-    return {
+    this.archiveQuestion = this.archiveQuestion.bind(this);
+    this.unarchiveQuestion = this.unarchiveQuestion.bind(this);
+    this.deleteQuestion = this.deleteQuestion.bind(this);
+    this.renderNoQuestions = this.renderNoQuestions.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.renderLoading = this.renderLoading.bind(this);
+    this.renderQuestions = this.onSubmit.bind(this);
+    this.renderQuestionsView = this.onSubmit.bind(this);
+
+    this.state = {
       questions: [],
     };
-  },
+  }
 
   archiveQuestion(questionId) {
     const path = `${questionId}/archive`;
-    modules.actions.updateQuestion(path)
+    questionsModule.actions.updateQuestion(path)
       .done(response => {
         this.props.refreshAppData();
       });
-  },
+  }
 
   unarchiveQuestion(questionId) {
     const path = `${questionId}/unarchive`;
-    modules.actions.updateQuestion(path)
+    questionsModule.actions.updateQuestion(path)
       .done(response => {
         this.props.refreshAppData();
       });
-  },
+  }
 
   deleteQuestion(questionId) {
     const path = `${questionId}/delete`;
-    modules.actions.updateQuestion(path)
+    questionsModule.actions.updateQuestion(path)
       .done(response => {
         this.props.refreshAppData();
       });
-  },
+  }
 
   renderNoQuestions() {
     return(
@@ -52,7 +55,7 @@ module.exports = React.createClass({
         </div>
       </section>
     );
-  },
+  }
 
   renderLoading() {
     return(
@@ -64,7 +67,7 @@ module.exports = React.createClass({
         </div>
       </section>
     );
-  },
+  }
 
   renderQuestions() {
     return(
@@ -86,9 +89,9 @@ module.exports = React.createClass({
         </ol>
       </section>
     );
-  },
+  }
 
-  render() {
+  renderQuestionsView() {
     if (this.props.isLoading) {
       return this.renderLoading();
     }
@@ -97,4 +100,24 @@ module.exports = React.createClass({
     }
     return this.renderNoQuestions();
   }
-});
+
+  render() {
+    <div>
+      <QuestionCreator
+        refreshAppData={ this.refreshAppData }
+        selectedMeeting={ this.state.selectedMeeting }
+      />
+      { this.renderQuestionsView() }
+    </div>
+  }
+};
+
+ListMode.propTypes = {
+  isLoading: React.PropTypes.bool.isRequired,
+  questions: React.PropTypes.array.isRequired,
+  showArchived: React.PropTypes.bool.isRequired,
+  showButtons: React.PropTypes.bool.isRequired,
+  refreshAppData: React.PropTypes.func.isRequired,
+};
+
+export default ListMode

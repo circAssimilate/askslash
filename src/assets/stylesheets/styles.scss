@@ -13,7 +13,7 @@ $nav-bar-z-index: 1002;
 $dialog-container-z-index: 1003;
 
 html {
-  background: url('/images/bg.svg') no-repeat 45% 0 $background-primary-color;
+  background: url('/assets/images/bg.svg') no-repeat 45% 0 $background-primary-color;
 }
 
 .main {
@@ -71,7 +71,7 @@ footer a:link, footer a:visited {
   top: 0;
   left: 0;
   font-size: 26px;
-  background: url('/static/img/bg.svg') no-repeat 0 30% $background-primary-color;
+  background: url('/assets/images/bg.svg') no-repeat 0 30% $background-primary-color;
   color: $text-primary-color;
   height: 100%;
   width: 100%;
