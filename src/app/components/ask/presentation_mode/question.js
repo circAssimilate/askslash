@@ -1,4 +1,5 @@
-const React = require('react');
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const questionsModule = require('app/modules/questions');
 
@@ -22,9 +23,9 @@ class Question extends React.Component {
 };
 
 Question.propTypes = {
-  question: React.PropTypes.string.isRequired,
-  date: React.PropTypes.string.isRequired,
-  author: React.PropTypes.string.isRequired,
+  question: PropTypes.string.isRequired,
+  date: PropTypes.string.isRequired,
+  author: PropTypes.string.isRequired,
 };
 
 export default Question

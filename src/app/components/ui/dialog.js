@@ -1,47 +1,44 @@
-const $ = require('jquery');
-const React = require('react');
+import $ from 'jquery';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const {
+import {
   ButtonRow,
   Button,
-} = require('optimizely-oui');
+} from 'optimizely-oui';
 
-module.exports = React.createClass({
-  propTypes: {
-    cancelButtonText: React.PropTypes.string.isRequired,
-    dialogContent: React.PropTypes.func.isRequired,
-    dialogTitle: React.PropTypes.string.isRequired,
-    hideCancelOptions: React.PropTypes.bool.isRequired,
-    hideDialog: React.PropTypes.func.isRequired,
-    isSubmitDisabled: React.PropTypes.bool.isRequired,
-    onSubmit: React.PropTypes.func.isRequired,
-    style: React.PropTypes.string.isRequired,
-    submitButtonText: React.PropTypes.string.isRequired,
-  },
+class Dialog extends React.Component {
+  constructor(props) {
+    super(props);
 
-  getInitialState() {
-    return {
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.renderButtonRow = this.renderButtonRow.bind(this);
+    this.renderButtonRowWithCancel = this.renderButtonRowWithCancel.bind(this);
+    this.renderCloseIcon = this.renderCloseIcon.bind(this);
+
+    this.state = {
       newMeeting: {},
     };
-  },
+  }
 
-  componentDidMount: function() {
+  componentDidMount() {
     $(document.body).on('keydown', this.handleKeyDown);
-  },
+  }
 
   componentWillUnmount() {
     $(document.body).off('keydown', this.handleKeyDown);
-  },
+  }
 
   handleKeyDown(event) {
     if (event.keyCode == 27) { // Esc
       this.props.hideDialog();
     }
-  },
+  }
 
   onSubmit() {
     this.props.onSubmit();
-  },
+  }
 
   renderButtonRow() {
     return (
@@ -58,7 +55,7 @@ module.exports = React.createClass({
         ]}
       />
     );
-  },
+  }
 
   renderButtonRowWithCancel() {
     return (
@@ -82,7 +79,7 @@ module.exports = React.createClass({
         ]}
       />
     );
-  },
+  }
 
   renderCloseIcon() {
     return(
@@ -93,7 +90,7 @@ module.exports = React.createClass({
         </svg>
       </div>
     );
-  },
+  }
 
   render() {
     return (
@@ -112,5 +109,19 @@ module.exports = React.createClass({
         </div>
       </div>
     );
-  },
-});
+  }
+};
+
+Dialog.propTypes = {
+  cancelButtonText: PropTypes.string.isRequired,
+  dialogContent: PropTypes.func.isRequired,
+  dialogTitle: PropTypes.string.isRequired,
+  hideCancelOptions: PropTypes.bool.isRequired,
+  hideDialog: PropTypes.func.isRequired,
+  isSubmitDisabled: PropTypes.bool.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  style: PropTypes.string.isRequired,
+  submitButtonText: PropTypes.string.isRequired,
+};
+
+export default Dialog

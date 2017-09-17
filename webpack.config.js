@@ -2,10 +2,10 @@ var webpack = require('webpack');
 var path = require('path');
 
 var BUILD_DIR = path.resolve(__dirname, '/dist');
-var APP_DIR = path.resolve(__dirname, './src/app/');
+var APP_DIR = path.resolve(__dirname, './src/app');
 
 var config = {
-  entry: APP_DIR + '/index.js',
+  entry: APP_DIR + '/components/main/index.js',
   output: {
     path: BUILD_DIR,
     filename: 'bundle.js'
@@ -22,6 +22,7 @@ var config = {
       {
         test: /\.js/,
         include: APP_DIR,
+        exclude: /node_modules/,
         loader: 'babel-loader'
       },
       {
@@ -30,6 +31,7 @@ var config = {
       },
       {
         test: /\.s?css$/,
+        exclude: /node_modules/,
         loader: 'style-loader!css-loader!sass-loader'
       },
     ]

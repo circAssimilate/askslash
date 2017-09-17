@@ -4,15 +4,16 @@ import ReactDOM from 'react-dom';
 
 import Ask from 'app/components/ask'
 
-import { ButtonRow, Button } from 'optimizely-oui';
-
+import ouiIcons from 'oui-icons'
 import 'assets/stylesheets/base.scss'
 import 'assets/stylesheets/styles.scss'
+
 
 class App extends React.Component {
   render() {
     return (
       <div id="app">
+        <div className="display--none" dangerouslySetInnerHTML={ {__html: ouiIcons} }></div>
         <Ask/>
         <footer>
           <ul className="text--right reverse">

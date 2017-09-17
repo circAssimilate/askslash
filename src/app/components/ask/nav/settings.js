@@ -1,16 +1,18 @@
-const _ = require('lodash');
-const React = require('react');
-const { Immutable, toImmutable } = require('nuclear-js');
+import _ from 'lodash';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Dialog = require('app/components/ui/Dialog');
+import { Immutable, toImmutable } from 'nuclear-js';
 
-const questionsModule = require('app/modules/questions');
+import Dialog from 'app/components/ui/Dialog';
 
-const {
+import questionsModule from 'app/modules/questions';
+
+import {
   Checkbox,
   Input,
   Radio,
-} = require('optimizely-oui');
+} from 'optimizely-oui';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -163,8 +165,8 @@ class Settings extends React.Component {
 };
 
 Settings.propTypes = {
-  refreshAppData: React.PropTypes.func.isRequired,
-  hideComponent: React.PropTypes.func.isRequired,
+  refreshAppData: PropTypes.func.isRequired,
+  hideComponent: PropTypes.func.isRequired,
 };
 
 export default Settings

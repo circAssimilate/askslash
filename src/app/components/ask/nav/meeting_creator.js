@@ -1,15 +1,17 @@
-const _ = require('lodash');
-const React = require('react');
-const { Immutable, toImmutable } = require('nuclear-js');
+import _ from 'lodash';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Dialog = require('app/components/ui/Dialog');
+import { Immutable, toImmutable } from 'nuclear-js';
 
-const questionsModule = require('app/modules/questions');
+import Dialog from 'app/components/ui/Dialog';
 
-const {
+import questionsModule from 'app/modules/questions';
+
+import {
   Button,
   Input,
-} = require('optimizely-oui');
+} from 'optimizely-oui';
 
 class MeetingCreator extends React.Component {
   constructor(props) {
@@ -114,9 +116,9 @@ class MeetingCreator extends React.Component {
 };
 
 MeetingCreator.propTypes = {
-  hideComponent: React.PropTypes.func.isRequired,
-  noMeetings: React.PropTypes.bool.isRequired,
-  refreshAppData: React.PropTypes.func.isRequired,
+  hideComponent: PropTypes.func.isRequired,
+  noMeetings: PropTypes.bool.isRequired,
+  refreshAppData: PropTypes.func.isRequired,
 };
 
 export default MeetingCreator

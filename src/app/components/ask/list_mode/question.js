@@ -1,11 +1,12 @@
-const React = require('react');
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const questionsModule = require('app/modules/questions');
+import questionsModule from 'app/modules/questions';
 
-const {
+import {
   ButtonRow,
   Button,
-} = require('optimizely-oui');
+} from 'optimizely-oui';
 
 class Question extends React.Component {
   constructor(props) {
@@ -72,11 +73,11 @@ class Question extends React.Component {
 };
 
 Question.propTypes = {
-  archiveQuestion: React.PropTypes.func.isRequired,
-  deleteQuestion: React.PropTypes.func.isRequired,
-  question: React.PropTypes.object.isRequired,
-  showButtons: React.PropTypes.bool.isRequired,
-  unarchiveQuestion: React.PropTypes.func.isRequired,
+  archiveQuestion: PropTypes.func.isRequired,
+  deleteQuestion: PropTypes.func.isRequired,
+  question: PropTypes.object.isRequired,
+  showButtons: PropTypes.bool.isRequired,
+  unarchiveQuestion: PropTypes.func.isRequired,
 };
 
 export default Question

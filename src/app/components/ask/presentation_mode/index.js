@@ -1,8 +1,9 @@
-const _ = require('lodash');
-const $ = require('jquery');
-const React = require('react');
+import _ from 'lodash';
+import $ from 'jquery';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const Question = require('./question');
+import Question from './question';
 
 class PresentationMode extends React.Component {
   constructor(props) {
@@ -96,8 +97,8 @@ class PresentationMode extends React.Component {
 };
 
 PresentationMode.propTypes = {
-  hideComponent: React.PropTypes.func.isRequired,
-  questions: React.PropTypes.array.isRequired,
+  hideComponent: PropTypes.func.isRequired,
+  questions: PropTypes.array.isRequired,
 };
 
 export default PresentationMode

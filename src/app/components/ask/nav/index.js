@@ -1,19 +1,18 @@
-const _ = require('lodash');
-const $ = require('jquery');
-const questionsModule = require('app/modules/questions');
-const React = require('react');
-const { Immutable, toImmutable } = require('nuclear-js');
+import _ from 'lodash';
+import $ from 'jquery';
+import questionsModule from 'app/modules/questions';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Immutable, toImmutable } from 'nuclear-js';
 
-const MeetingCreator = require('./meeting_creator');
-const Settings = require('./settings');
+import MeetingCreator from './meeting_creator';
+import Settings from './settings';
+
+import { ArrowsInline } from 'optimizely-oui';
 
 const phoneNumber = '6144-OPTIFY (614-467-8439)';
 const slackShortcut = '/ask';
 const ctaIntervalInSeconds = 5;
-
-const {
-  ArrowsInline,
-} = require('optimizely-oui');
 
 class Nav extends React.Component {
   constructor(props) {
@@ -53,13 +52,13 @@ class Nav extends React.Component {
     });
   }
 
-  componentDidMount: function() {
+  componentDidMount() {
     $(document.body).on('keydown', this.handleKeyDown);
     $(document.body).on('click', this.handleClick);
     $(document.body).on('keyup', this.handleKeyUp);
   }
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     $(document.body).off('keydown', this.handleKeyDown);
     $(document.body).off('click', this.handleClick);
     $(document.body).off('keyup', this.handleKeyUp);
@@ -262,15 +261,15 @@ class Nav extends React.Component {
 };
 
 Nav.propTypes = {
-  archivedVisible: React.PropTypes.bool.isRequired,
-  buttonsVisible: React.PropTypes.bool.isRequired,
-  isLoading: React.PropTypes.bool.isRequired,
-  meetings: React.PropTypes.array.isRequired,
-  questions: React.PropTypes.array.isRequired,
-  refreshAppData: React.PropTypes.func.isRequired,
-  selectedMeeting: React.PropTypes.object.isRequired,
-  toggleShowArchived: React.PropTypes.func.isRequired,
-  toggleShowButtons: React.PropTypes.func.isRequired,
+  archivedVisible: PropTypes.bool.isRequired,
+  buttonsVisible: PropTypes.bool.isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  meetings: PropTypes.array.isRequired,
+  questions: PropTypes.array.isRequired,
+  refreshAppData: PropTypes.func.isRequired,
+  selectedMeeting: PropTypes.object.isRequired,
+  toggleShowArchived: PropTypes.func.isRequired,
+  toggleShowButtons: PropTypes.func.isRequired,
 };
 
 export default Nav

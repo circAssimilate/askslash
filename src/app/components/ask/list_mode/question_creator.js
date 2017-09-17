@@ -1,16 +1,18 @@
-const _ = require('lodash');
-const $ = require('jquery');
-const React = require('react');
-const { Immutable, toImmutable } = require('nuclear-js');
+import _ from 'lodash';
+import $ from 'jquery';
+import React from 'react';
+import PropTypes from 'prop-types';
 
-const questionsModule = require('app/modules/questions');
+import { Immutable, toImmutable } from 'nuclear-js';
 
-const {
+import questionsModule from 'app/modules/questions';
+
+import {
   ButtonRow,
   Button,
   Checkbox,
   Textarea,
-} = require('optimizely-oui');
+} from 'optimizely-oui';
 
 class QuestionCreator extends React.Component {
   constructor(props) {
@@ -83,7 +85,7 @@ class QuestionCreator extends React.Component {
             .set('anonymous', false)
             .set('question', ''),
         });
-        this.props.refreshAppData();
+        // this.props.refreshAppData();
       });
   }
 
@@ -126,8 +128,7 @@ class QuestionCreator extends React.Component {
 };
 
 QuestionCreator.propTypes = {
-  refreshAppData: React.PropTypes.func.isRequired,
-  selectedMeeting: React.PropTypes.object.isRequired,
+  selectedMeeting: PropTypes.object.isRequired,
 };
 
 export default QuestionCreator

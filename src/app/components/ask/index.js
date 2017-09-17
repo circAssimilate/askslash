@@ -2,20 +2,14 @@ import { connect } from 'react-redux'
 import axios from 'axios'
 import _ from 'lodash'
 import $ from 'jquery'
-import ouiIcons from 'oui-icons'
 import React from 'react'
-import ReactDOM from 'react-dom'
 
 import Nav from './nav'
-import QuestionCreator from './question_creator'
 import ListMode from './list_mode'
-const PresentationMode = require('./presentation_mode');
+import PresentationMode from './presentation_mode'
 
 import questionsModule from 'app/modules/questions'
 import { ButtonRow, Button } from 'optimizely-oui'
-
-import 'assets/stylesheets/base.scss'
-import 'assets/stylesheets/styles.scss'
 
 class Ask extends React.Component {
   constructor(props) {
@@ -97,10 +91,27 @@ class Ask extends React.Component {
     this.refreshAppData();
   }
 
+  currentView() {
+    switch ('list_mode') {
+      case 'list_mode':
+        return (
+          <div>Test</div>
+          // <ListMode
+          //   questions={this.state.questions}
+          // />
+        );
+        break;
+      case 'presentation_mode':
+        return (<PresentationMode/>);
+        break;
+      default:
+        return (<ListMode/>);
+    }
+  }
+
   render() {
     return (
       <div className="main anchor--middle push-triple--ends">
-        <div className="display--none" dangerouslySetInnerHTML={ {__html: ouiIcons} }></div>
         <Nav
           archivedVisible={ this.state.showArchived }
           buttonsVisible={ this.state.showButtons }
@@ -112,20 +123,10 @@ class Ask extends React.Component {
           toggleShowArchived={ this.toggleShowArchived }
           toggleShowButtons={ this.toggleShowButtons }
         />
-        <ListMode
-          isLoading={ this.state.isLoading }
-          questions={ this.state.questions }
-          refreshAppData={ this.refreshAppData }
-          showArchived={ this.state.showArchived }
-          showButtons={ this.state.showButtons }
-        />
-        <PresentationMode
-          questions={ _.filter(this.props.questions, ['archived', false]) }
-          hideComponent={ () => { this.toggleSubMenuVisibility('presentationMode', false) } }
-        />
+        { this.currentView() }
       </div>
     );
   }
 };
 
-export default Ask
+export default Ask;
