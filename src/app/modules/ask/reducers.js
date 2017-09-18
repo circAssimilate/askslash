@@ -44,12 +44,15 @@ export default (state={}, action) => {
         questions: [],
       });
     case constants.actions.UPDATE_QUESTION:
-      _.each(state.questions, question => {
-        if (question['_id'] === action.question) {
-          question = action.question;
+      const updatedQuestions = _.map(state.questions, question => {
+        if (question['_id'] === action.question['_id']) {
+          return action.question;
         }
+        return question;
+      })
+      return _.merge(state, {
+        questions: updatedQuestions
       });
-      return state;
     default:
       return state;
   }
