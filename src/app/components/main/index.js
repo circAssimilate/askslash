@@ -1,6 +1,7 @@
-import { connect } from 'react-redux'
 import React from 'react';
 import ReactDOM from 'react-dom';
+import redux from 'app/modules/main/store'
+import { Provider } from 'react-redux';
 
 import Ask from 'app/components/ask'
 
@@ -8,8 +9,11 @@ import ouiIcons from 'oui-icons'
 import 'assets/stylesheets/base.scss'
 import 'assets/stylesheets/styles.scss'
 
-
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
   render() {
     return (
       <div id="app">
@@ -31,6 +35,8 @@ class App extends React.Component {
 };
 
 ReactDOM.render(
-  <App />,
+  <Provider store={redux}>
+    <App />
+  </Provider>,
   document.getElementById('root')
 );

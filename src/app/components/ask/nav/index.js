@@ -96,6 +96,12 @@ class Nav extends React.Component {
     }
   }
 
+  setNextState(nextState) {
+    this.setState(nextState, () => {
+
+    });
+  }
+
   handleKeyUp(event) {
     this.setNextState({
       keystrokes: {},

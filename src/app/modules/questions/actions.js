@@ -2,30 +2,30 @@ const $ = require('jquery');
 const enums = require('./enums');
 const fns = require('./fns');
 
-// Database actions
-exports.getQuestions = meetingId => {
-  return $.ajax({
-    url: `/api/v1/questions/${meetingId}`,
-    type: 'GET',
-  });
-};
-
-exports.postQuestion = questionData => {
-  return $.ajax({
-    url: '/api/v1/questions',
-    type: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify(questionData),
-  });
-};
-
-exports.updateQuestion = path => {
-  return $.ajax({
-    url: `/api/v1/questions/${path}`,
-    type: 'PUT',
-    contentType: 'application/json',
-  });
-};
+// // Database actions
+// exports.getQuestions = meetingId => {
+//   return $.ajax({
+//     url: `/api/v1/questions/${meetingId}`,
+//     type: 'GET',
+//   });
+// };
+//
+// exports.postQuestion = questionData => {
+//   return $.ajax({
+//     url: '/api/v1/questions',
+//     type: 'POST',
+//     contentType: 'application/json',
+//     data: JSON.stringify(questionData),
+//   });
+// };
+//
+// exports.updateQuestion = path => {
+//   return $.ajax({
+//     url: `/api/v1/questions/${path}`,
+//     type: 'PUT',
+//     contentType: 'application/json',
+//   });
+// };
 
 exports.getMeetings = () => {
   return $.ajax({
@@ -51,13 +51,13 @@ exports.deleteMeeting = meetingId => {
   });
 };
 
-exports.archiveMeetingQuestions = path => {
-  return $.ajax({
-    url: `/api/v1/meetings/${path}`,
-    type: 'PUT',
-    contentType: 'application/json',
-  });
-};
+// exports.archiveMeetingQuestions = path => {
+//   return $.ajax({
+//     url: `/api/v1/meetings/${path}`,
+//     type: 'PUT',
+//     contentType: 'application/json',
+//   });
+// };
 
 // Client storage actions
 exports.getOrCreateUserId = () => {

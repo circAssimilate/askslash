@@ -104,7 +104,14 @@ router.put('/api/v1/questions/:questionId/:instruction', (request, response) => 
       }
     });
 
-    response.send({status: 'success'});
+    const updatedCollection = db.collection(questionsModule.enums.collections.QUESTIONS);
+    updatedCollection.find({ _id: ObjectId(questionId) }).toArray((err, result) => {
+      if (err) {
+        console.error('Unable to get question', err);
+        return response.send(err);
+      }
+      response.send(result[0]);
+    });
 
     db.close();
   });
@@ -112,7 +119,7 @@ router.put('/api/v1/questions/:questionId/:instruction', (request, response) => 
 
 /* MEETINGS */
 
-// get meeting
+// get meetings
 router.get('/api/v1/meetings', (request, response) => {
   MongoClient.connect(questionsModule.enums.settings.MONGO_URL.DEV, (err, db) => {
     if (err) {
@@ -204,6 +211,9 @@ router.put('/api/v1/meetings/:meetingId/:instruction', (request, response) => {
   switch(instruction) {
     case 'archive':
       update = { archived: true };
+      break;
+    case 'delete':
+      update = { deleted: true };
       break;
   }
 
